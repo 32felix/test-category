@@ -5,6 +5,9 @@ body {
   background: transparent url("/images/background.png") repeat fixed 0;
   -webkit-background-size: cover;
   background-size: cover;
+  color: #fff;
+  font-family: "Oswald", serif;
+  font-weight: 100;
 }
 
 .container {
@@ -44,11 +47,21 @@ body {
       padding: 0;
       text-align: right;
       color: #fff;
+      p{
+        text-align: center;
+      }
       &.col-md-2 {
         max-width: 129px;
         margin-left: 21px;
         border-left: 1px solid #F6511D;
         margin-top: 5px;
+        @media (max-width: 992px) {
+          max-width: 100%;
+          border: none;
+          display: table;
+          width: 100%;
+          margin: 20px 0 10px;
+        }
       }
       #phone {
         display: inline-block;
@@ -80,30 +93,124 @@ body {
       #call-back, #orders {
         font-size: 14px;
       }
-      #bucket {
-        font-weight: normal;
-        cursor: pointer;
-        display: inline-block;
-        border: 1px solid #FFB400;
-        color: #FFB400;
+      .bucket {
         position: relative;
-        height: 40px;
-        line-height: 39px;
-        padding: 0 7px 0 20px;
-        font-size: 20px;
-        svg {
-          height: 22px;
-          margin-bottom: -4px;
-          g {
-            fill: #FFB400;
+        display: inline-block;
+        @media (max-width: 992px) {
+          display: table-cell;
+          width: 1%;
+        }
+        #bucket {
+          font-weight: normal;
+          cursor: pointer;
+          display: inline-block;
+          border: 1px solid #FFB400;
+          color: #FFB400;
+          height: 40px;
+          line-height: 39px;
+          padding: 0 7px 0 20px;
+          font-size: 20px;
+          svg {
+            height: 22px;
+            margin-bottom: -4px;
+            g {
+              fill: #FFB400;
+            }
+          }
+          &.full {
+            background-color: #FFB400;
+            color: #000;
+            svg {
+              g {
+                fill: #000;
+              }
+            }
           }
         }
-        &.full {
-          background-color: #FFB400;
+        .bucket-hidden {
+          position: absolute;
+          z-index: 2000;
+          background-color: rgb(255, 255, 255);
+          padding: 5px 15px;
           color: #000;
-          svg {
-            g {
-              fill: #000;
+          right: 50%;
+          margin-right: -82px;
+          & > img {
+            width: 134px;
+            padding: 0 20px;
+          }
+          .product-bucket {
+            font-size: 10px;
+            text-align: left;
+            display: table;
+            width: 100%;
+            padding: 5px 0 3px;
+            border-bottom: 1px dotted;
+            margin-left: -1px;
+            & > div {
+              display: table-cell;
+              vertical-align: middle;
+              padding-right: 10px;
+              &:first-child {
+                width: 100%;
+              }
+              &:last-child {
+                padding: 0;
+              }
+              &.bucket-title {
+                span {
+                  font-family: 'Corbel', serif;
+                }
+              }
+            }
+            .count-bucket {
+              width: 26px;
+              font-size: 11px;
+              text-align: center;
+            }
+            .delete-bucket {
+              width: 9px;
+            }
+            img {
+              height: 9px;
+              cursor: pointer;
+              &.bucket-plus {
+                -webkit-transform: scale(-1);
+                -moz-transform: scale(-1);
+                -ms-transform: scale(-1);
+                -o-transform: scale(-1);
+                transform: scale(-1);
+              }
+            }
+          }
+          .sum-bucket {
+            overflow: hidden;
+            font-size: 14px;
+            margin-top: 4px;
+            border-top: 1px dotted;
+            border-bottom: 1px dotted;
+            padding: 10px 0 7px;
+            p {
+              margin: 0;
+            }
+            .pull-right {
+              color: #7FB800;
+            }
+          }
+          .order-bucket {
+            margin-top: 4px;
+            border-top: 1px dotted;
+            text-align: center;
+            margin-left: 1px;
+            padding: 10px 0 5px;
+            a {
+              text-decoration: none;
+              color: #7FB800;
+              border: 1px solid;
+              background: #fff;
+              display: inline-block;
+              padding: 4px 10px;
+              font-size: 10px;
             }
           }
         }
@@ -111,6 +218,10 @@ body {
       .costs {
         margin: 11px 0 5px;
         font-size: 18px;
+        @media (max-width: 992px) {
+          display: table-cell;
+          width: 1%;
+        }
       }
       .navbar-form {
         font-weight: normal;

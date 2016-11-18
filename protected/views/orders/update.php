@@ -25,7 +25,7 @@ $this->title = $main . ' замовлення';
 
     <?= $form->field($model, 'id')->hiddenInput() ?>
 
-    <?= $form->field($model, 'userName')->textInput(['maxlength' => true, 'data-type' => $model->type]) ?>
+    <?= $form->field($model, 'userName')->textInput(['maxlength' => true]) ?>
 
     <?= $form->field($model, 'telephone')->textInput(['maxlength' => true]) ?>
 

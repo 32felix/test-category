@@ -5,22 +5,38 @@
 use app\components\utils\GlobalsUtils;
 use app\models\form\OrdersForm;
 use app\models\Orders;
+use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\bootstrap\Nav;
 use yii\bootstrap\NavBar;
 use yii\helpers\Url;
 use app\assets\AppAsset;
 
+
 $ip = OrdersForm::getIp();
 $userAgent = GlobalsUtils::issetdef($_SERVER["HTTP_USER_AGENT"]);
-$model = Orders::find()->where('ip="'.$ip.'" AND userAgent="'.$userAgent.'" AND status IS NULL')->one();
+$model = Orders::find()->where('ip="'.$ip.'" AND userAgent="'.$userAgent.'" AND status IS NULL');
+
+if ($userId = Yii::$app->user->getId())
+    $model->andWhere(['userId' => $userId]);
+$model = $model->one();
+$orders = [];
 if ($model)
 {
-    $sql = "SELECT SUM(IFNULL(PP.price*OP.count,0))
+    $sql = "SELECT SUM(IFNULL(PP.price*OP.count,0)) as `sum`, P.name, P.type, OP.count, OP.id, PP.price, PS.size
             FROM OrderProducts OP
             LEFT JOIN ProductsPrices PP ON PP.id=OP.productPriceId
-            WHERE OP.orderId=".$model->id;
-    $count = Yii::$app->db->createCommand($sql)->queryScalar();
+            LEFT JOIN ProductsSize PS ON PS.id=PP.sizeId
+            LEFT JOIN Products P ON P.id=PP.productId
+            WHERE OP.orderId=".$model->id."
+            GROUP BY OP.id";
+    $orders = Yii::$app->db->createCommand($sql)->queryAll();
+}
+
+if (!empty($orders))
+{
+    $count = ArrayHelper::getColumn($orders, 'sum');
+    $count = array_sum($count);
 }
 $count = $count ?? 0;
 
@@ -93,9 +109,47 @@ $this->title = 'PizzaTime';
             </div>
             <div class="col-md-2 col-header">
                 <div class="costs">сума <?= sprintf('%.2f', $count) ?> грн</div>
-                <div id="bucket" class="<?= $count > 0?'full':'' ?>">
-                    Кошик
-                    <?= file_get_contents(Yii::$app->basePath . '/../images/header/bucket.svg')?>
+                <div class="bucket">
+                    <div id="bucket" class="<?= $count > 0?'full':'' ?>">
+                        Кошик
+                        <?= file_get_contents(Yii::$app->basePath . '/../images/header/bucket.svg')?>
+                    </div>
+                    <div class="bucket-hidden hidden">
+                        <img src="/images/header/logo-bucket.png" />
+                        <? if ($count > 0): ?>
+                            <div class="products-bucket">
+                                <? foreach ($orders as $order): ?>
+                                    <div class="product-bucket" data-id="<?= $order['id'] ?>">
+                                        <div class="bucket-title">
+                                            <span><?= $order['name'] . ($order['size']?'<br>'.$order['size']:'') ?></span><br><?= sprintf('%.2f', $order['price']) ?> грн
+                                        </div>
+                                        <div>
+                                            <div class="count-bucket">
+
+                                                <img class="bucket-minus" src="/images/header/bucket-count.png" />
+                                                <span><?= $order['count'] ?></span>
+                                                <img class="bucket-plus" src="/images/header/bucket-count.png" />
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <div class="delete-bucket">
+                                                <img src="/images/header/bucket-delete.png" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                <? endforeach; ?>
+                            </div>
+                            <div class="sum-bucket">
+                                <p class="pull-left">Сума:</p>
+                                <p class="pull-right"><?= sprintf('%.2f', $count) ?> грн</p>
+                            </div>
+                            <div class="order-bucket">
+                                <a href="<?= Url::toRoute('/orders/create') ?>">Оформити замовлення</a>
+                            </div>
+                        <? else: ?>
+                            <p>Кошик пустий</p>
+                        <? endif; ?>
+                    </div>
                 </div>
             </div>
         </div>
@@ -152,3 +206,118 @@ $this->title = 'PizzaTime';
 </body>
 </html>
 <?php $this->endPage() ?>
+
+<script>
+    $(function () {
+        $('#bucket').click(function () {
+            $(this).siblings('.bucket-hidden').toggleClass('hidden');
+        });
+
+        $('.bucket-hidden').on('click', '.count-bucket img', function () {
+            var $this = $(this),
+                id = $this.closest('.product-bucket').attr('data-id'),
+                factor,
+                count = $this.siblings('span').text();
+
+            if ($this.attr('class') == 'bucket-minus')
+            {
+                factor = -1;
+            }
+            else
+            {
+                factor = 1;
+            }
+
+            if (count != 1 || factor != -1)
+            {
+
+
+                $.ajax({
+                    url: "/orders/add-count",
+                    data: {
+                        id: id,
+                        factor: factor
+                    },
+                    type: "POST",
+                    dataType: 'json'
+                }).done(function (data) {
+                    if (data.error)
+                    {
+                        alert(data.error);
+                    }
+                    else if (data.status=="ok") {
+                        $this.siblings('span').text(data.count);
+                        $this.closest('.bucket-hidden').find('.sum-bucket .pull-right').text(data.sum+' грн');
+                        $this.closest('.bucket').siblings('.costs').text('сума '+data.sum+' грн');
+                    }
+                }).fail(function (jqXHR, textStatus, errorThrown) {
+                    alert("Невозможно сохранить: Ошибка: " + jqXHR.status + " " + jqXHR.statusText);
+                });
+            }
+        });
+
+        $('.bucket-hidden').on('click', '.delete-bucket img', function () {
+            var $this = $(this),
+                id = $this.closest('.product-bucket').attr('data-id');
+
+            $.ajax({
+                url: "/orders/delete-price-id",
+                data: {
+                    id: id
+                },
+                type: "POST",
+                dataType: 'json'
+            }).done(function (data) {
+                if (data.error)
+                {
+                    alert(data.error);
+                }
+                else if (data.status=="ok")
+                {
+                    $this.closest('.bucket-hidden').find('.sum-bucket .pull-right').text(data.sum+' грн');
+                    $this.closest('.bucket').siblings('.costs').text('сума '+data.sum+' грн');
+
+                    if (data.close == 'one')
+                        $this.closest('.product-bucket').remove();
+                    else
+                    {
+                        $this.closest('.bucket-hidden').siblings('div').removeClass('full');
+                        $this.closest('.products-bucket').siblings('div').remove();
+                        $this.closest('.products-bucket').replaceWith('<p>Кошик пустий</p>');
+                    }
+                }
+            }).fail(function (jqXHR, textStatus, errorThrown) {
+                alert("Невозможно сохранить: Ошибка: " + jqXHR.status + " " + jqXHR.statusText);
+            });
+        });
+
+        var height = $('.navbar-inverse').offset().top;
+
+        if ($(this).scrollTop() + 10 >= height)
+        {
+            $('.navbar-inverse').css({
+                'position': 'fixed',
+                'top': '10px'
+            });
+        }
+
+        $(document).scroll(function () {
+            if ($(this).scrollTop() + 10 >= height)
+            {
+                $('.navbar-inverse').css({
+                    'position': 'fixed',
+                    'top': '10px'
+                });
+            }
+
+            if ($(this).scrollTop() + 10 < height)
+            {
+                $('.navbar-inverse').css({
+                    'position': 'absolute',
+                    'top': height+'px',
+                });
+            }
+
+        })
+    })
+</script>

@@ -33,9 +33,9 @@ class OrdersForm extends Model
         return [
             [['userName'], 'string', 'max' => 200],
             [['telephone'], 'string', 'max' => 13, 'min' => 13],
-            [['addressId', 'userName', 'telephone'], 'request'],
             [['email'], 'email'],
             [['id', 'userId', 'addressId', 'deleted'], 'integer'],
+//            [['addressId', 'userName', 'telephone'], 'request'],
         ];
     }
 

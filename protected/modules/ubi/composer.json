@@ -1,0 +1,13 @@
+//{
+//    "name": "titanium-ua/ubi",
+//    "require": {
+//        "yiisoft/yii2-jui": "*",
+//        "nodge/yii2-eauth": "*",
+//        "yiisoft/yii2-imagine": "*"
+//    },
+//    "autoload": {
+//        "psr-4": {
+//            "tit\\ubi\\": ""
+//        }
+//    }
+//}

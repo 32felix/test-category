@@ -101,6 +101,14 @@ $config = [
         ],
     ],
     'modules' => [
+        'ubi' => [
+            'class' => tit\ubi\UbiModule::class,
+            'params' => [
+                'allowedAvatarSizes' => [
+                    "210x280", "150x200", "66x66", "37x37", "100x100", "200x200"
+                ],
+            ]
+        ],
     ],
     'params' => require(__DIR__ . '/include/params.php'),
 ];

@@ -10,6 +10,7 @@ use app\components\utils\ImageUtils;
 use app\models\form\ProductsForm;
 use app\models\Images;
 use yii\helpers\Html;
+use yii\helpers\Url;
 use yii\web\View;
 if ($type == "pizza")
 {
@@ -58,6 +59,13 @@ elseif ($type == "popcorn")
     $(function () {
         $('input[type="radio"]').each(function () {
             $(this).siblings('.radio-button').toggleClass('checked', this.checked);
+            if (this.checked)
+            {
+                var size = $(this).closest('.product-size'),
+                    id = $(this).siblings('.radio-button').attr('data-id');
+                size.siblings('.product-buy').find('.price').css({'display': 'none'});
+                size.siblings('.product-buy').find('.price-'+id).css({'display': 'inline-block'});
+            }
         });
         $(".product-size").on("change", 'input[type="radio"]', function () {
             var size = $(this).closest('.product-size'),
@@ -96,12 +104,32 @@ elseif ($type == "popcorn")
                 {
                     $this.html('Хочу ще');
                     $this.addClass('select');
+                    $('#bucket').addClass('full');
 
-                    var cost = $('.costs').text();
-                    cost = cost.substring(4, cost.length-4);
-                    cost = parseFloat(cost)+parseFloat(data.price);
-                    $('.costs').html('сума '+cost+'.00 грн');
-                    $('#id').addClass('full');
+                    if (data.add == 'create')
+                    {
+                        $('.bucket-hidden').find('p').remove();
+                        $('.bucket-hidden').append("<div class='products-bucket'></div>" +
+                            "<div class='sum-bucket'><p class='pull-left'>Сума:</p><p class='pull-right'>0 грн</p></div>"+
+                            "<div class='order-bucket'><a href='<?= Url::toRoute('/orders/create') ?>'>Оформити замовлення</a></div>")
+                    }
+
+                    if (data.add == 'add' || data.add == 'create')
+                    {
+                        $('.bucket-hidden').find('.products-bucket').append("<div class='product-bucket' data-id='"+data.orderId+"'>"+
+                            "<div class='bucket-title'><span>"+data.name+(data.size?"<br>"+data.size:"")+"</span><br>"+data.price+" грн"+
+                            "</div>" +
+                            "<div><div class='count-bucket'><img class='bucket-minus' src='/images/header/bucket-count.png' />" +
+                            "<span>"+data.count+"</span><img class='bucket-plus' src='/images/header/bucket-count.png' /></div>" +
+                            "</div><div><div class='delete-bucket'><img src='/images/header/bucket-delete.png' /></div></div></div>")
+                    }
+                    else
+                    {
+                        $('.bucket-hidden').find('.product-bucket[data-id="'+data.orderId+'"]').find('.count-bucket span').text(data.count)
+                    }
+
+                    $('.bucket-hidden').find('.sum-bucket .pull-right').text(data.sum+' грн');
+                    $('.bucket').siblings('.costs').text('сума '+data.sum+' грн');
                 }
             }).fail(function (jqXHR, textStatus, errorThrown) {
                 alert("Невозможно добавить: Ошибка: " + jqXHR.status + " " + jqXHR.statusText);

@@ -1,10 +1,8 @@
 <?php
 /**
  * @var View $this
- * @var string $type
  * @var OrdersForm $model
  */
-//$this->title = 'My Yii Application';
 
 use app\models\form\OrdersForm;
 use yii\bootstrap\ActiveForm;
@@ -19,44 +17,44 @@ $this->title = $main . ' замовлення';
 
     <?php $form = ActiveForm::begin(); ?>
 
-    <?= $form->field($model, 'userName')->textInput(['maxlength' => true, 'data-type' => $model->type]) ?>
+    <?= $form->field($model, 'userId')->textInput(['maxlength' => true]); ?>
 
-    <?= $form->field($model, 'telephone')->textInput(['maxlength' => true]) ?>
+    <?= $form->field($model, 'telephone')->textInput(['maxlength' => true]); ?>
 
-    <?= $form->field($model, 'email')->textInput(['maxlength' => true]) ?>
+    <?= $form->field($model, 'email')->textInput(['maxlength' => true]); ?>
 
-    <?= $form->field($model, 'addressId')->textInput(['maxlength' => true]) ?>
+    <?= $form->field($model, 'addressId')->textInput(['maxlength' => true]); ?>
 
-    <? for ($i = 0; $i < 25; $i++):?>
+    <?/* for ($i = 0; $i < 25; $i++):*/?><!--
 
-        <div class="form-group <?=(empty($model->productPriceId[$i])?'hidden':'')?>">
+        <div class="form-group <?/*=(empty($model->productPriceId[$i])?'hidden':'')*/?>">
 
-            <?=$form->field($model, "productPriceId[$i]", ['options' => ['style' => 'width: 32%; float: left; padding-right: 2%;']])
+            <?/*=$form->field($model, "productPriceId[$i]", ['options' => ['style' => 'width: 32%; float: left; padding-right: 2%;']])
                 ->label("Замовлений продукт")
-                ->textInput(['value' => (isset($model->productPriceId[$i])?$model->productPriceId[$i]:'')]);?>
+                ->textInput(['value' => (isset($model->productPriceId[$i])?$model->productPriceId[$i]:'')]);*/?>
 
-            <?=$form->field($model, "count[$i]", ['options' => ['style' => 'width: 32%; float: left;  padding-right: 2%;']])
+            <?/*=$form->field($model, "count[$i]", ['options' => ['style' => 'width: 32%; float: left;  padding-right: 2%;']])
                 ->label("Кількість")
-                ->textInput(['value' => (isset($model->count[$i])?$model->count[$i]:'')]);?>
+                ->textInput(['value' => (isset($model->count[$i])?$model->count[$i]:'')]);*/?>
 
-            <?if (isset($model->productPriceId[$i])):?>
-                <?= Html::a('X', ['delete-price-id', 'productPriceId' => $model->productPriceId[$i], 'orderId' => $model->id], [
+            <?/*if (isset($model->productPriceId[$i])):*/?>
+                <?/*= Html::a('X', ['delete-price-id', 'productPriceId' => $model->productPriceId[$i], 'orderId' => $model->id], [
                     'class' => 'btn delete-size',
                     'style' => 'margin: 24px 0 9px',
                     'data' => [
                         'confirm' => 'Ви впевнені, що хочете видалити цей продукт?',
                         'method' => 'post',
                     ],
-                ]) ?>
-            <?else:?>
-                <div class="btn delete-product-size" data-id="<?=$i?>" style="margin: 24px 0 9px;">X</div>
-            <?endif;?>
+                ]) */?>
+            <?/*else:*/?>
+                <div class="btn delete-product-size" data-id="<?/*=$i*/?>" style="margin: 24px 0 9px;">X</div>
+            <?/*endif;*/?>
         </div>
 
-    <?endfor;?>
+    <?/*endfor;*/?>
     <div class="form-group">
-        <?= Html::submitButton('Добавити розмір', ['class' => 'btn info bonus-from-value']) ?>
-    </div>
+        <?/*= Html::submitButton('Добавити розмір', ['class' => 'btn info bonus-from-value']) */?>
+    </div>-->
     <div class="form-group">
         <?= Html::submitButton($main, ['class' =>'btn btn-success']) ?>
     </div>
@@ -65,7 +63,7 @@ $this->title = $main . ' замовлення';
 
 </div>
 
-<script>
+<!--<script>
     $(function () {
         $('.form-group').on('click', '.bonus-from-value', function (e) {
             e.preventDefault();
@@ -83,4 +81,4 @@ $this->title = $main . ' замовлення';
             form.children('.field-ordersform-count-'+index).next().addClass('hidden');
         })
     })
-</script>
+</script>-->

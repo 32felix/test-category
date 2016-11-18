@@ -3,9 +3,11 @@
 namespace app\controllers;
 
 use app\components\utils\GlobalsUtils;
+use app\components\utils\OrderUtils;
 use app\models\form\OrdersForm;
 use app\models\OrderProducts;
 use app\models\Orders;
+use app\models\Products;
 use app\models\ProductsPrices;
 use app\models\ProductsSize;
 use Yii;
@@ -33,7 +35,7 @@ class OrdersController extends Controller
                         'roles' => ['admin'],
                     ],
                     [
-                        'actions' => ['create', "add-price-id", "delete-price-id", "add-count", "remove-count"],
+                        'actions' => ['create', "add-price-id", "delete-price-id", "add-count"],
                         'allow' => true,
                     ],
                 ],
@@ -112,6 +114,7 @@ class OrdersController extends Controller
 
     public function actionCreate()
     {
+        $this->layout = 'main';
         $form = new OrdersForm();
         $user = Yii::$app->user->identity;
         if ($form->load(Yii::$app->request->post()) && $form->create())
@@ -195,21 +198,32 @@ class OrdersController extends Controller
         }
 
         $res = [];
-        if(empty($_POST['orderId']) || empty($_POST['productPriceId']))
+        if(empty($_POST['id']))
             $res["error"]="Не вказані дані";
 
         if (empty($res["error"]))
         {
-            $model = OrderProducts::findAll(['orderId' => $_POST['orderId']]);
-            $order = OrderProducts::findAll(['orderId' => $_POST['orderId'], 'productPriceId' => $_POST['productPriceId']]);
+            $order = OrderProducts::findOne($_POST['id']);
+            if ($order)
+                $model = OrderProducts::findAll(['orderId' => $order->orderId]);
             if (empty($model) || empty($order))
                 $res["error"] = "Не знайдене замовлення";
 
             if (empty($res["error"]))
             {
-                OrderProducts::deleteAll(['orderId' => $_POST['orderId'], 'productPriceId' => $_POST['productPriceId']]);
+                $orderId = $order->orderId;
+                $res['count'] = $order->count;
+                $order->delete();
+
+                $res['close'] = 'one';
+
                 if (count($model) < 2)
-                    Orders::deleteAll(['id' => $_POST['orderId']]);
+                {
+                    Orders::deleteAll(['id' => $orderId]);
+                    $res['close'] = 'all';
+                }
+
+                $res['sum'] = OrderUtils::getSum($orderId);
 
                 $res["status"] = "ok";
             }
@@ -233,19 +247,29 @@ class OrdersController extends Controller
 
         $size = ProductsSize::findOne(['size' => $_POST['sizes']]);
         if (!$size)
-            $res['error'] = "Неправильный размер";
-
-        $productPrice = ProductsPrices::findOne(['sizeId' => $size->id, 'productId' => $_POST['productId']]);
-        if (!$productPrice)
-            $res['error'] = "Нет такого размера";
+            $res['error'] = "Неправильный розмір";
 
         if (empty($res["error"]))
         {
-            $res['price'] = $productPrice->price;
+            $productPrice = ProductsPrices::findOne(['sizeId' => $size->id, 'productId' => $_POST['productId']]);
+            if (!$productPrice)
+                $res['error'] = "Немає такого розміру";
+        }
+
+        if (empty($res["error"]))
+        {
+            $res['price'] = sprintf('%.2f', $productPrice->price);
+            $res['size'] = $_POST['sizes'];
+
+            $res['add'] = 'add';
 
             $ip = OrdersForm::getIp();
             $userAgent = GlobalsUtils::issetdef($_SERVER["HTTP_USER_AGENT"]);
-            $model = Orders::find()->where('ip="'.$ip.'" AND userAgent="'.$userAgent.'" AND status IS NULL')->one();
+            $model = Orders::find()->where('ip="'.$ip.'" AND userAgent="'.$userAgent.'" AND status IS NULL');
+            if ($userId = Yii::$app->user->getId())
+                $model->andWhere(['userId' => $userId]);
+            $model = $model->one();
+
             if (!$model)
             {
                 $model = new Orders();
@@ -260,6 +284,7 @@ class OrdersController extends Controller
                 $model->userAgent = $userAgent;
                 $model->save();
 
+                $res['add'] = 'create';
             }
 
             if (empty($res["error"]))
@@ -275,8 +300,14 @@ class OrdersController extends Controller
                 else
                 {
                     $order->count = $order->count + 1;
+                    $res['add'] = 'add-count';
                 }
                 $order->save();
+
+                $res['orderId'] = $order->id;
+                $res['name'] = Products::findOne($productPrice->productId)->name;
+                $res['sum'] = OrderUtils::getSum($order->orderId);
+                $res['count'] = $order->count;
 
                 $res["status"] = "ok";
             }
@@ -293,50 +324,23 @@ class OrdersController extends Controller
             return false;
 
         $res = [];
-        if(empty($_POST['orderId']) || empty($_POST['productPriceId']))
+        if(empty($_POST['id']) || empty($_POST['factor']))
             $res["error"]="Не вказані дані";
 
         if (empty($res["error"]))
         {
-            $model = Orders::findOne(['orderId' => $_POST['orderId']]);
-            $order = OrderProducts::findOne(['orderId' => $_POST['orderId'], 'productPriceId' => $_POST['productPriceId']]);
-            if (empty($model) || empty($order))
+            $order = OrderProducts::findOne($_POST['id']);
+            if (empty($order))
                 $res["error"] = "Не знайдене замовлення";
 
             if (empty($res["error"]))
             {
-                $order->count = $order->count + 1;
+                $order->count = $order->count + $_POST['factor'];
                 $order->save();
 
-                $res["status"] = "ok";
-            }
-        }
+                $res['count'] = $order->count;
 
-        header("Content-type: application/json");
-        echo json_encode($res, JSON_UNESCAPED_UNICODE);
-        Yii::$app->end();
-    }
-
-    public function actionRemoveCount()
-    {
-        if(!Yii::$app->request->isAjax)
-            return false;
-
-        $res = [];
-        if(empty($_POST['orderId']) || empty($_POST['productPriceId']))
-            $res["error"]="Не вказані дані";
-
-        if (empty($res["error"]))
-        {
-            $model = Orders::findOne(['orderId' => $_POST['orderId']]);
-            $order = OrderProducts::findOne(['orderId' => $_POST['orderId'], 'productPriceId' => $_POST['productPriceId']]);
-            if (empty($model) || empty($order))
-                $res["error"] = "Не знайдене замовлення";
-
-            if (empty($res["error"]))
-            {
-                $order->count = $order->count - 1;
-                $order->save();
+                $res['sum'] = OrderUtils::getSum($order->orderId);
 
                 $res["status"] = "ok";
             }
