@@ -1,0 +1,3 @@
+<Files *.less>
+ Require all denied
+</Files>

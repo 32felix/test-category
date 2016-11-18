@@ -1,0 +1,22 @@
+DirectoryIndex index.php
+AddDefaultCharset utf-8
+
+<IfModule mod_rewrite.c>
+    RewriteEngine on
+    RewriteBase    /
+    
+	#RewriteCond %{HTTPS} off
+    #RewriteRule (.*) https://%{HTTP_HOST}%{REQUEST_URI} [L]
+	
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule . index.php
+</IfModule>
+
+#php_value post_max_size "50M"
+#php_value upload_max_filesize "50M"
+
+php_value session.gc_maxlifetime 10800
+
+#session closes on close tab
+php_value session.cookie_lifetime 0
