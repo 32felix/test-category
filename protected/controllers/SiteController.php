@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\components\utils\ImageUtils;
 use app\models\form\RegisterForm;
 use app\models\Users;
 use Yii;
@@ -131,5 +132,20 @@ class SiteController extends Controller
         return $this->render('register', [
             'model' => $model,
         ]);
+    }
+
+    public function actionCaptchaBuild()
+    {
+        if(!Yii::$app->request->isAjax)
+            return false;
+
+        $res = [];
+        $res['error'] ="";
+
+        $res["text"] = ImageUtils::captchaBuild();
+
+        header("Content-type: application/json");
+        echo json_encode($res, JSON_UNESCAPED_UNICODE);
+        Yii::$app->end();
     }
 }

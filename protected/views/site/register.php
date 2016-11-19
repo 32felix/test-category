@@ -4,16 +4,14 @@
 /* @var $form yii\bootstrap\ActiveForm */
 /* @var $model app\models\form\RegisterForm */
 
-use Gregwar\Captcha\CaptchaBuilder;
+use app\components\utils\ImageUtils;
 use yii\helpers\Html;
 use yii\bootstrap\ActiveForm;
 
 $this->title = 'Реєстрація';
 $this->params['breadcrumbs'][] = $this->title;
 
-$builder = new CaptchaBuilder;
-$builder->build();
-Yii::$app->cache->set('captcha-register', $builder->getPhrase())
+$image = ImageUtils::captchaBuild()
 
 ?>
 <div class="site-login">
@@ -40,7 +38,9 @@ Yii::$app->cache->set('captcha-register', $builder->getPhrase())
 
         <?= $form->field($model, 'passwordRewrite')->passwordInput() ?>
 
-        <img src="<?php echo $builder->inline(); ?>" />
+        <img class="captcha-img" src="<?= $image ?>" />
+
+        <?= Html::a('Оновити картинку', '#', ['class' => 'captcha-reload']) ?>
 
         <?= $form->field($model, 'verifyCode') ?>
 
@@ -52,3 +52,22 @@ Yii::$app->cache->set('captcha-register', $builder->getPhrase())
 
     <?php ActiveForm::end(); ?>
 </div>
+
+<script type="text/javascript">
+    $(function () {
+        $('.captcha-reload').click(function (e) {
+            e.preventDefault();
+
+            $.ajax({
+                url: "/site/captcha-build",
+                data: {},
+                type: "POST",
+                dataType: 'json'
+            }).done(function (data) {
+                $('.captcha-img').prop('src', data.text);
+            }).fail(function (jqXHR, textStatus, errorThrown) {
+                alert("Невозможно сохранить: Ошибка: " + jqXHR.status + " " + jqXHR.statusText);
+            });
+        })
+    })
+</script>

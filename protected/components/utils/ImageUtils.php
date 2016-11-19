@@ -2,6 +2,7 @@
 
 namespace app\components\utils;
 use app\models\Images;
+use Gregwar\Captcha\CaptchaBuilder;
 use Yii;
 
 /**
@@ -41,7 +42,7 @@ class ImageUtils
             $path = "/media/res/{$path}/{$id}.{$time}.{$ext}";
 
 //        if (YII_DEBUG)
-            $path='http://web.pizza'.$path;
+            $path='http://'.$_SERVER["SERVER_NAME"].$path;
 
         return $path;
     }
@@ -59,6 +60,14 @@ class ImageUtils
         foreach($arrayNumbers as $number)
             $pass .= '/'.$number;
         return $pass;
+    }
+
+    public static function captchaBuild(){
+        $builder = new CaptchaBuilder;
+        $builder->build();
+        Yii::$app->cache->set('captcha-register', $builder->getPhrase());
+
+        return $builder->inline();
     }
 
 }
