@@ -26,10 +26,9 @@ class UbiAsset  extends AssetBundle
         'yii\jui\JuiAsset',
 //        FileApiAsset::class
     ];
-    function __construct($config = [])
+    function __construct()
     {
         $this->sourcePath = __DIR__.'/assets';
-        parent::__construct($config);
     }
 
 }

@@ -15,43 +15,44 @@ class ChangePassForm extends Model
     public $newPass;
     public $newPassRepeat;
 
+    public $userId;
+
+
 	public function rules()
     {
 		return
         [
-            [['oldPass'], 'required', 'on'=>self::SCENARIO_CHANGE],
-            [['oldPass'], 'checkOldPass', 'on'=>self::SCENARIO_CHANGE],
+            [['oldPass'], 'checkOldPass' , 'on'=>self::SCENARIO_CHANGE],
             [['newPass'], 'string', 'min'=>6, 'max'=>100],
             [['newPassRepeat'], 'safe'],
             [['newPassRepeat', 'newPass'], 'required' ,'on'=>self::SCENARIO_SET],
-            [['newPassRepeat', 'newPass'], 'required' ,'on'=>self::SCENARIO_CHANGE],
-            [['newPassRepeat'], 'compare', 'compareAttribute'=>'newPass'],
+            [['newPass'], 'compare', 'compareAttribute'=>'newPassRepeat'],
         ];
 	}
 
-    function checkOldPass($attribute, $params)
+    function checkOldPass()
     {
         if (Yii::$app->user->isGuest)
-            $this->addError("oldPass","Ви не авторизовані");
+            $this->addError("TitUbiAuthModule.user","User is not signed in.");
 
         /**
          * @var $user GlobalUsers
          */
-        $user = GlobalUsers::findOne(Yii::$app->user->id);
+        $user = GlobalUsers::find()->where(['id'=>$this->userId])->one();
 
         if (!$user)
-            $this->addError("oldPass","Користувача не знайдено");
+            $this->addError("User not found");
 
         if (!$user->validatePassword($this->oldPass))
-            $this->addError("oldPass","Пароль введено невірно");
+            $this->addError("Password is incorrect");
     }
 
     public function attributeLabels()
     {
         return array(
-            'oldPass'=>'Пароль',
-            'newPass'=>'Новий пароль',
-            'newPassRepeat'=>'Повторіть новий пароль',
+            'oldPass'=>'Old password',
+            'newPass'=>'New password',
+            'newPassRepeat'=>'Repeat new password',
         );
     }
 
@@ -60,9 +61,10 @@ class ChangePassForm extends Model
         /**
          * @var $user GlobalUsers
          */
-        $user = GlobalUsers::findOne(Yii::$app->user->id);
-        $user->password = GlobalUsers::hashPassword($this->newPass);
-        $user->save(false,["password"]);
+        $user = GlobalUsers::find()->where(['id'=>$this->userId])->one();
+        $user->scenario = GlobalUsers::SCENARIO_CHANGE_PASS;
+        $user->password = $this->newPass;
+        $user->update();
     }
 
 }

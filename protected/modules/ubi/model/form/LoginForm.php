@@ -17,8 +17,6 @@ class LoginForm extends Model
     public $rememberMe = true;
 
     private $_user = false;
-
-    /** @var \tit\ubi\model\GlobalUsers */
     private $_globalUser = false;
 
     const SCENARIO_LOGIN = 'login';
@@ -36,7 +34,7 @@ class LoginForm extends Model
             // password is validated by validatePassword()
             ['password', 'validatePassword'],
 
-//            [['login'], 'email', 'on' => [self::SCENARIO_LOGIN]],
+            [['login'], 'email', 'on' => [self::SCENARIO_LOGIN]],
             [['login'], 'unique', 'on' => [self::SCENARIO_LOGIN]],
         ];
     }
@@ -84,17 +82,7 @@ class LoginForm extends Model
     public function getGlobalUser()
     {
         if ($this->_globalUser=== false) {
-            $this->_globalUser = GlobalUsers::findByEmail(strtolower(trim($this->login)))
-                ->one();
-            if (!$this->_globalUser)
-            {
-                $phone = $this->login;
-                $phone = preg_replace("~[^0-9]~", "", trim($phone));
-                if (!preg_match("~^38~", $phone))
-                    $phone = "38" . $phone;
-                $phone = "+" . $phone;
-                $this->_globalUser = GlobalUsers::find()->where(["phone"=>$phone])->one();// findByLogin($this->login);
-            }
+            $this->_globalUser = GlobalUsers::find()->where(["email"=>strtolower($this->login)])->one();// findByLogin($this->login);
         }
         return $this->_globalUser;
     }

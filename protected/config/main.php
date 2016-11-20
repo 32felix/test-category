@@ -51,9 +51,17 @@ $config = [
             'class' => 'yii\caching\FileCache',
         ],
 
-        'mail' => [
+        'mailer' => [
             'class' => 'yii\swiftmailer\Mailer',
-            'useFileTransport' => true,
+            'useFileTransport' => false,
+            'transport' => [
+                'class' => 'Swift_SmtpTransport',
+                'host' => 'smtp.gmail.com',
+                'username' => 'abrakadabra011988@gmail.com',
+                'password' => 'YcSeX302Rw3ydkFiaNp8t0aiEuRgAmlU',
+                'port' => '587',
+                'encryption' => 'tls',
+            ],
         ],
         'i18n' => [
             'translations' => [

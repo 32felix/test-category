@@ -1,0 +1,1 @@
+<span class="ubi-message">Password restoration instructions have been sent to your mail.</span>

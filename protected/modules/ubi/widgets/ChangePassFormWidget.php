@@ -37,6 +37,7 @@ class ChangePassFormWidget extends Widget
             }
             $model = new ChangePassForm();
             $model->scenario = $user->password==null?ChangePassForm::SCENARIO_SET:ChangePassForm::SCENARIO_CHANGE;
+            $model->userId = $user->id;
         }
         return $this->render("changePassFormWidget", ['model'=>$model]);
     }

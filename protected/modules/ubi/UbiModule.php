@@ -9,10 +9,6 @@
 namespace tit\ubi;
 
 
-use app\models\PotentialUserToUser;
-use app\modules\Partner;
-use app\modules\ubi\model\UserMail;
-use tit\ubi\model\GlobalUsers;
 use tit\ubi\model\UsersSocialAccounts;
 use UbiCache;
 use yii\base\Application;
@@ -25,13 +21,21 @@ use yii\db\Connection;
 
 class UbiModule extends Module
 {
-    public static $secret = "qowierjjdfja3948";
-
-    public $globalUserTableName = 'GlobalUsers';
-    public $ubiDatabaseName = 'db';
-    public $localUserTableName = 'User';
+    public $globalUserTableName = 'Users';
+    public  $ubiDatabaseName = 'db';
+    public $localUserTableName = 'Users';
     public $localDatabaseName = 'db';
     public $params;
+
+    /**
+     * @var UbiCache
+     */
+    public $cache = [
+        "class"=>'tit\ubi\UbiCache',
+        'cacheTime' => 600,
+        'blocksParams' => ['password','id'],
+        'checkUbiDB' => true,
+    ];
 
     public function init()
     {
@@ -42,7 +46,7 @@ class UbiModule extends Module
         \Yii::$app->i18n->translations['tit/ubi'] = [
             'class' => 'yii\i18n\PhpMessageSource',
             'sourceLanguage' => 'en',
-            'basePath' => __DIR__ . '/messages',
+            'basePath' => __DIR__.'/messages',
             'fileMap' => [
                 'tit/ubi' => 'ubi.php',
             ],
@@ -50,11 +54,21 @@ class UbiModule extends Module
     }
 
     /**
+     * @return UbiCache
+     */
+    public function getCache()
+    {
+        if (is_array($this->cache))
+            $this->cache = Yii::createObject($this->cache);
+        return $this->cache;
+    }
+
+    /**
      * @return Connection
      */
     public function getDbUbi()
     {
-        return Yii::$app->{$this->ubiDatabaseName};
+        return 'db';
     }
 
     /**
@@ -62,141 +76,87 @@ class UbiModule extends Module
      */
     public function getDb()
     {
-        return Yii::$app->{$this->localDatabaseName};
+        return 'db';
     }
 
 
     /**
      * @param \nodge\eauth\ServiceBase $service
-     * @return Users
+     * @return User
      * @throws ErrorException
      */
-    public function findLocalUserByEAuth($service, $extra=[])
+    public function findLocalUserByEAuth($service)
     {
         if (!$service->getIsAuthenticated()) {
             throw new ErrorException('EAuth user should be authenticated before creating identity.');
-        } else {
+        }
+        elseif ($service->getIsAuthenticated())
+        {
             $usa = UsersSocialAccounts::find()->where(
                 [
-                    "provider" => $service->getServiceName(),
-                    "providerId" => $service->getId(),
+                    "provider"=>$service->getServiceName(),
+                    "providerId"=>$service->getId(),
                 ])->one();
 
-            $gUser = null;
-
-            if ($usa != null) {
+            if ($usa!=null) {
                 $usa->data = json_encode($service->getAttributes(), JSON_UNESCAPED_UNICODE);
                 $usa->save(false);
-                $gUser = GlobalUsers::find()->where(['id' => $usa->userid])->one();
-                if (!$gUser)
-                    $usa->delete();
+                $gUser = Users::find()->where(['id' => $usa->userid])->one();
             }
 
-            if (!$gUser)
-            {
+            if ($usa==null || $gUser==null) {
                 $email = strtolower($service->getAttribute('email'));
                 $gUser = null;
 
-                if ($email) {
-                    $gUser = GlobalUsers::find()->where(["email" => $email])->one();
-                    if (!$gUser) {
-                        $userMail = UserMail::findVerified($email)->one();
-                        if ($userMail)
-                            $gUser = $userMail->user0;
-                    }
-                }
+                if ($email)
+                    $gUser = Users::find()->where(["email" => $email])->one();
 
-                //Connect?
-//                if ($gUser == null && !Yii::$app->user->isGuest)
-//                    $gUser = GlobalUsers::find()->where(['id' => Yii::$app->user->getId()])->one();
+                if ($gUser == null && !Yii::$app->user->isGuest)
+                    $gUser = Users::find()->where(['id' => Yii::$app->user->getId()])->one();
 
                 if ($gUser == null) {
-                    $gUser = new GlobalUsers();
-                    $ref = GlobalUsers::getReferrer();
-                    if (!empty($ref))
-                        $gUser->referrer = $ref->id;
+                    $gUser = new Users();
                     $gUser->save(false);
                 }
 
-                \Yii::$app->db->createCommand("REPLACE UsersSocialAccounts(userid,provider,providerId,data,email)
-                    VALUES (:userid,:provider,:providerId,:data,:email)",
+                \Yii::$app->db->createCommand("REPLACE UsersSocialAccounts(userid,provider,providerId,data)
+                    VALUES (:userid,:provider,:providerId,:data)",
                     [
                         ':userid' => $gUser->id,
                         ':provider' => $service->getServiceName(),
                         ':providerId' => $service->getId(),
-                        ':email' => $email,
                         ':data' => json_encode($service->getAttributes(), JSON_UNESCAPED_UNICODE)
                     ])->execute();
             }
-            
+            else
             {
-                if ($gUser->name == null)
+                //Global user exists
+            }
+            {
+                if ($gUser->name==null)
                     $gUser->name = $service->getAttribute('name');
-
-                $mail = strtolower(trim($service->getAttribute('email')));
-                if (!empty($mail))
-                {
-                    if (!UserMail::findVerified(["address"=>$mail])->exists()) {
-                        $userMail = UserMail::findOne(["user"=>$gUser->id, "address"=>$mail]);
-                        if (!$userMail) {
-                            $userMail = new UserMail();
-                            $userMail->user = $gUser->id;
-                            $userMail->address = $mail;
-                            $userMail->save(false, ["user", "address"]);
-                            $userMail->sendRegisterMail();
-                            $userMail->save(false, ["timeVerificationSent"]);
-                        }
-                        if ($gUser->email == null) {
-                            $u2 = GlobalUsers::findOne(['email' => $mail]);
-                            if (empty($u2)) {
-                                $gUser->email = $mail;
-//                                $gUser->timeEmailVerified = null;
-                            }
+                if ($gUser->email==null  && !empty($service->getAttribute('email'))) {
+                    $gUser->email = strtolower($service->getAttribute('email'));
+                    if ($gUser->email!=null)
+                    {
+                        $u2 = Users::findOne(['email'=>$gUser->email]);
+                        if (!empty($u2)) {
+                            $gUser->unconfirmedEmail =$gUser->email;
+                            $gUser->email = null;
                         }
                     }
                 }
-
-//                if ($gUser->email == null && !empty($service->getAttribute('email'))) {
-//                    $gUser->email = strtolower($service->getAttribute('email'));
-//                    if ($gUser->email != null) {
-//                        $u2 = GlobalUsers::findOne(['email' => $gUser->email]);
-//                        if (!empty($u2)) {
-////                            $gUser->unconfirmedEmail =$gUser->email;
-//                            $gUser->email = null;
-//                        }
-//                    }
-//                }
-
-                if ($gUser->birthday == null)
-                    $gUser->birthday = $service->getAttribute('birthday');
-
-                if ($gUser->lastName == null)
-                    $gUser->lastName = $service->getAttribute('lastname');
-
-                if ($gUser->slug == null) {
-                    $gUser->slug = $service->getAttribute('slug');
-                    if ($gUser->slug != null) {
-                        $u2 = GlobalUsers::findOne(['slug' => $gUser->slug]);
-                        if (!empty($u2))
-                            $gUser->slug = null;
-                    }
-                }
-
-//                if (!$gUser->timeEmailVerificationSent)
-//                    $gUser->sendRegisterMail();
 
                 $gUser->save(false);
+
+                return $gUser;
             }
-
-            $localUser = $gUser->ensureLocalUser();
-
-            return $localUser;
         }
     }
 
-    public static function cachedParam($param, $user = null, $allowCached = null)
+    public static function cachedParam($param, $user=null, $allowCached=null)
     {
-        return self::getInstance()->getCache()->get($param, $user, $allowCached);
+        return self::getInstance()->getCache()->get($param,$user,$allowCached);
     }
 
 }

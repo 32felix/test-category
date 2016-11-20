@@ -5,6 +5,7 @@ namespace app\models\form;
 use app\models\Users;
 use Yii;
 use yii\base\Model;
+use yii\base\Security;
 
 /**
  * LoginForm is the model behind the login form.
@@ -64,19 +65,31 @@ class RegisterForm extends Model
 
         if ($this->verifyCode !== Yii::$app->cache->get('captcha-register'))
         {
-            $this->verifyMessage = "Введено неправильний код з картинки";
+            $this->verifyMessage = "Введено неправильний код з картинки!";
             return false;
         }
 
         $this->getUser();
-        if ($this->_user || $this->password !== $this->passwordRewrite)
+        if ($this->_user)
+        {
+            $this->verifyMessage = "Користувач з таким e-mail або телефоном вже зареєстрований!";
             return false;
+        }
+        elseif ($this->password != $this->passwordRewrite)
+        {
+            $this->verifyMessage = "Поля 'Пароль' та 'Повторення пароля' не співпадають!";
+            return false;
+        }
+
 
         $this->_user = new Users();
         $this->_user->telephone = $this->telephone;
         $this->_user->password = md5($this->password);
         $this->_user->email = $this->email;
         $this->_user->name = $this->name;
+
+        $assess = new Security();
+        $this->_user->accessCode = $assess->generateRandomString(32);
 
         if ($this->_user->save())
         {
@@ -95,7 +108,7 @@ class RegisterForm extends Model
     public function getUser()
     {
         if ($this->_user === false)
-            $this->_user = Users::findOne(['email' => $this->email]);
+            $this->_user = Users::find()->where(['email' => $this->email])->orWhere(['telephone' => $this->telephone])->one();
 
         return $this->_user;
     }

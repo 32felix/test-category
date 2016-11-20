@@ -19,11 +19,15 @@ $image = ImageUtils::captchaBuild()
 
     <p style="color: red">Всі поля обов'язкові для заповнення!</p>
 
+    <?if ($model->verifyMessage):?>
+        <p style="color: red"><?= $model->verifyMessage ?></p>
+    <?endif?>
+
     <?php $form = ActiveForm::begin([
         'id' => 'register-form',
         'options' => ['class' => 'form-vertical'],
         'fieldConfig' => [
-            'template' => "<div class='row'>{label}\n</div><div class='row'><div class=\"col-lg-4\">{input}</div>\n<div class=\"col-lg-8\">{error}</div></div>",
+            'template' => "<div class='row'>{label}\n</div><div class='row'><div class=\"col-lg-7\">{input}</div>\n<div class=\"col-lg-5\">{error}</div></div>",
             'labelOptions' => ['class' => 'col-lg-12 control-label'],
         ],
     ]); ?>

@@ -14,17 +14,15 @@ class UbiOdnoklassnikiOAuth2Service extends OdnoklassnikiOAuth2Service
             'query' => array(
                 'method' => 'users.getCurrentUser',
                 'format' => 'JSON',
-                'application_key' => $this->clientPublic,
-                'client_id' => $this->clientId,
+                'application_key' => $this->client_public,
+                'client_id' => $this->client_id,
             ),
         ));
 
-        $info = (array)$info;
+        $this->attributes['id'] = $info->uid;
+        $this->attributes['name'] = $info->first_name . ' ' . $info->last_name;
 
-        $this->attributes['id'] = $info["uid"];
-        $this->attributes['name'] = $info["first_name"] . ' ' . $info["last_name"];
-
-        $this->attributes['userPhoto'] = $info["pic_2"];
+        $this->attributes['userPhoto'] = $info->pic_2;
 
         $this->attributes +=(array)$info;
     }

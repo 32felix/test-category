@@ -16,7 +16,10 @@ use yii\web\IdentityInterface;
  * @property string $email
  * @property string $timeCreate
  * @property string $timeUpdate
+ * @property string $timeAddAvatar
  * @property integer $verified
+ * @property string $unconfirmedEmail
+ * @property string $accessCode
  * @property integer $deleted
  */
 class Users extends ActiveRecord implements IdentityInterface
@@ -35,11 +38,12 @@ class Users extends ActiveRecord implements IdentityInterface
     public function rules()
     {
         return [
-            [['timeCreate', 'timeUpdate'], 'safe'],
+            [['timeCreate', 'timeUpdate', 'timeAddAvatar'], 'safe'],
             [['telephone', 'name'], 'string', 'max' => 50],
             [['password'], 'string', 'max' => 200],
+            [['accessCode'], 'string'],
             [['verified', 'deleted'], 'integer'],
-            [['email'], 'email'],
+            [['email','unconfirmedEmail'], 'email'],
         ];
     }
 
@@ -58,8 +62,10 @@ class Users extends ActiveRecord implements IdentityInterface
             'name' => 'Назва користувача',
             'timeCreate' => 'Час створення',
             'timeUpdate' => 'Час редагування',
+            'timeAddAvatar' => 'Час добавлення аватарки',
             'verified' => 'Перевірений',
             'email' => 'E-mail',
+            'unconfirmedEmail' => 'Не підтверджений e-mail',
             'deleted' => 'Видалений',
         ];
     }

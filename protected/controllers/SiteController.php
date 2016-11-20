@@ -127,7 +127,14 @@ class SiteController extends Controller
 
         $model = new RegisterForm();
         if ($model->load(Yii::$app->request->post()) && $model->confirm()) {
-            Yii::$app->user->login(Users::findOne(['email' => $model->email]), 0);
+            $gUser = $model->getUser();
+            $msg = \Yii::$app->mailer->compose()
+                ->setFrom('abrakadabra011988@gmail.com')
+                ->setTo($gUser->email)
+                ->setHtmlBody($this->render('/mail/email_confirmation', ['gUser' => $gUser]))
+                ->setSubject('Test');
+            if ($msg->send())
+                return $this->render('registrationSuccess', ['email' => $gUser->email]);
         }
         return $this->render('register', [
             'model' => $model,
