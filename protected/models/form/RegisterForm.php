@@ -51,7 +51,7 @@ class RegisterForm extends Model
             'verifyCode' => 'Введіть код з картинки',
             'telephone' => 'Номер телефону',
             'password' => 'Пароль',
-            'passwordRewrite' => 'Повторення пароля',
+            'passwordRewrite' => 'Повторення паролю',
             'name' => 'Назва користувача',
             'email' => 'E-mail',
         ];
@@ -77,7 +77,7 @@ class RegisterForm extends Model
         }
         elseif ($this->password != $this->passwordRewrite)
         {
-            $this->verifyMessage = "Поля 'Пароль' та 'Повторення пароля' не співпадають!";
+            $this->verifyMessage = "Поля 'Пароль' та 'Повторення паролю' не співпадають!";
             return false;
         }
 
@@ -88,8 +88,7 @@ class RegisterForm extends Model
         $this->_user->email = $this->email;
         $this->_user->name = $this->name;
 
-        $assess = new Security();
-        $this->_user->accessCode = $assess->generateRandomString(32);
+        $this->_user->createAccessCode();
 
         if ($this->_user->save())
         {
@@ -112,6 +111,5 @@ class RegisterForm extends Model
 
         return $this->_user;
     }
-
 
 }

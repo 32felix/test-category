@@ -22,19 +22,25 @@ $this->params['breadcrumbs'][] = $this->title;
         ],
     ]); ?>
 
-        <?= $form->field($model, 'email')->textInput() ?>
+    <?= $form->field($model, 'email')->textInput() ?>
 
-        <?= $form->field($model, 'password')->passwordInput() ?>
+    <?= $form->field($model, 'password')->passwordInput() ?>
 
-        <?= $form->field($model, 'rememberMe')->checkbox([
-            'template' => "<div class='row'><div class='col-lg-4'>{input} {label}</div>\n<div class=\"col-lg-8\">{error}</div></div>",
-        ]) ?>
+    <?= $form->field($model, 'rememberMe')->checkbox([
+        'template' => "<div class='row'><div class='col-lg-4'>{input} {label}</div>\n<div class=\"col-lg-8\">{error}</div></div>",
+    ]) ?>
 
-        <div class="form-group row">
-            <div class="col-lg-12">
-                <?= Html::submitButton("Вхід", ['class' => 'btn btn-primary', 'name' => 'login-button']) ?>
-            </div>
+    <div class="form-group row">
+        <div class="col-lg-12">
+            <?= Html::a("Забули пароль?", \yii\helpers\Url::to('/restore-password-request')) ?>
         </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-lg-12">
+            <?= Html::submitButton("Вхід", ['class' => 'btn btn-primary', 'name' => 'login-button']) ?>
+        </div>
+    </div>
 
     <?php ActiveForm::end(); ?>
 </div>

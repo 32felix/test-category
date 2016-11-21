@@ -3,6 +3,7 @@
 namespace app\models;
 
 use Yii;
+use yii\base\Security;
 use yii\db\ActiveRecord;
 use yii\web\IdentityInterface;
 
@@ -82,6 +83,11 @@ class Users extends ActiveRecord implements IdentityInterface
         return self::findOne(["id"=>$id]);
     }
 
+    public function validatePassword($password)
+    {
+        return $this->password == md5($password);
+        //return crypt($password, $this->password) === $this->password;
+    }
 
     /**
      * Returns an ID that can uniquely identify a user identity.
@@ -107,7 +113,12 @@ class Users extends ActiveRecord implements IdentityInterface
         return false;
     }
 
-
+    public function createAccessCode ()
+    {
+        $assess = new Security();
+        $this->accessCode = $assess->generateRandomString(32);
+        return true;
+    }
 
 
 }

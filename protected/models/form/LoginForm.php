@@ -52,8 +52,13 @@ class LoginForm extends Model
         if (!$this->hasErrors()) {
             $user = $this->getUser();
 
-            if (!$user || $user->password != md5($this->password)) {
+            if (!$user || $user->password != md5($this->password))
+            {
                 $this->addError($attribute, 'Невірно введені email або пароль!');
+            }
+            elseif ($user && $user->verified == 0)
+            {
+                $this->addError($attribute, 'Даний користувач не авторизований!');
             }
         }
     }

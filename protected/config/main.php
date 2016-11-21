@@ -59,8 +59,8 @@ $config = [
                 'host' => 'smtp.gmail.com',
                 'username' => 'abrakadabra011988@gmail.com',
                 'password' => 'YcSeX302Rw3ydkFiaNp8t0aiEuRgAmlU',
-                'port' => '587',
-                'encryption' => 'tls',
+                'port' => '465',
+                'encryption' => 'ssl',
             ],
         ],
         'i18n' => [
@@ -85,6 +85,10 @@ $config = [
                 '/' => '/site/index',
                 '/contact' => '/site/contact',
                 '/register' => '/site/register',
+                '/change-pass' => '/site/change-pass',
+                '/activate' => '/site/activate',
+                '/restore-password-request' => '/site/restore-password-request',
+                '/email-restore' => '/site/email-restore',
                 '/login' => '/site/login',
                 '/delivery' => '/site/delivery',
 

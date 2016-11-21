@@ -13,16 +13,9 @@ use yii\base\Model;
  */
 class RemindPasswordForm extends Model
 {
-    public $email;
-    public $name;
     public $password;
-    public $verifyCode;
-
-    /**
-     * @var Users $_user
-     */
-    private $_user = false;
-
+    public $rewritePassword;
+    
     /**
      * @return array the validation rules.
      */
@@ -31,41 +24,26 @@ class RemindPasswordForm extends Model
         return [
             // username and password are both required
 //            [['userPhone'], 'required'],
-            ['email', 'validateEmail'],
+            [['password', 'rewritePassword'], 'string'],
+            [['password', 'rewritePassword'], 'validatePasswords'],
         ];
     }
 
     public function attributeLabels()
     {
         return [
-            'email' => 'E-mail',
+            'password' => 'Новий пароль',
+            'rewritePassword' => 'Повторіть новий пароль',
         ];
     }
 
-    public function validateEmail()
+    public function validatePasswords()
     {
-        if (!$this->hasErrors())
+        if ($this->password != $this->rewritePassword)
         {
-            $user = $this->getUser();
-
-            if (!$user)
-            {
-                $this->addError('email', 'Неправильний e-mail адрес');
-                return false;
-            }
+            $this->addError('rewritePassword', 'Паролі не співпадають!');
+            return false;
         }
     }
-
-    /**
-     * Finds user by [[username]]
-     *
-     * @return Users|null
-     */
-    public function getUser()
-    {
-        if ($this->_user === false)
-            $this->_user = Users::findOne(['email' => $this->email]);
-
-        return $this->_user;
-    }
+    
 }

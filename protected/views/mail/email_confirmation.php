@@ -31,8 +31,7 @@ use yii\web\View;
     <div style="width: 480px;border:1px solid #d3e3e6; margin: 0 auto 40px ;padding: 40px 50px 90px 40px">
         <p style="font-weight: bold;font-size: 18px;font-family: Arial;color: #000">Дорогий користувач!</p>
         <p style="margin: 25px 0 25px 0;font-family: Arial;font-size: 14px;">Щоб активувати ваш акаунт, будь ласка, перейдіть за посиланням, вказаному в цьому листі! </p>
-        <?php //echo Html::a('Cсылка для активирования аккаунта', [Url::toRoute('/ubi/user/activate', ['accessCode' => $model->accessCode()])], array('style' => 'font-size:14px; cursor: pointer;color:#02a3ff !important;text-decoration: none;'))?>
-        <?php echo Html::a('Посилання для активації акаунта', Url::to(['/ubi/user/activate', 'accessCode' => $gUser->accessCode, 'user'=>$gUser->id], true), ['style' => 'font-size:14px; cursor: pointer;color:#02a3ff !important;text-decoration: none;']);
+        <?php echo Html::a('Посилання для активації акаунта', Url::to(['/activate', 'accessCode' => $gUser->accessCode, 'user'=>$gUser->id], true), ['style' => 'font-size:14px; cursor: pointer;color:#02a3ff !important;text-decoration: none;']);
         ?>
         <p style="margin: 25px 0 25px 0;font-family: Arial;font-size: 14px;">З найкращими побажаннями,</p>
         <p style="margin: 25px 0 25px 0;font-size: 14px;">Команда Pizza-Time.org</p>
@@ -44,7 +43,7 @@ use yii\web\View;
         </div>
         <div style="width: 130px;float: left;padding: 0 0 0 50px;">
             <p style="font-size: 12px;font-family: arial;color:#1d1d1d;line-height:5px;font-weight: bold; "></p>
-            <p style="font-size: 12px;font-family: arial;color:#1d1d1d;line-height:5px;">будемо раді допомогти!</p>
+            <p style="font-size: 12px;font-family: arial;color:#1d1d1d;line-height:13px;">будемо раді допомогти!</p>
         </div>
         <div style="width: 130px;float: right;padding: 0 0 0 45px;position: relative; overflow: hidden;">
         </div>
