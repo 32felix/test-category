@@ -31,7 +31,7 @@ class ChangePassForm extends Model
     function checkOldPass()
     {
         if (Yii::$app->user->isGuest)
-            $this->addError("Користувач не залогінений");
+            $this->addError("Користувач не ввійшов на сайт!");
 
         /**
          * @var $user Users
