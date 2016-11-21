@@ -77,7 +77,7 @@ class RegisterForm extends Model
         }
         elseif ($this->password != $this->passwordRewrite)
         {
-            $this->verifyMessage = "Поля 'Пароль' та 'Повторення паролю' не співпадають!";
+            $this->verifyMessage = "Паролі не співпадають!";
             return false;
         }
 
