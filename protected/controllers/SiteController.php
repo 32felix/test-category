@@ -171,7 +171,7 @@ class SiteController extends Controller
     public function actionChangePass()
     {
         if (Yii::$app->user->isGuest)
-            throw new NotFoundHttpException('404: Корстувач не залогінений');
+            throw new NotFoundHttpException('404: Корстувач не ввійшов на сайт!');
         $user = Users::findOne(['id'=>Yii::$app->user->getId()]);
         if(isset($user->email) && !empty($user->email) && $user->email != NULL)
         {
