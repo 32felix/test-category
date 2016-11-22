@@ -11,13 +11,12 @@ use yii\helpers\Html;
     <h3 class="title"><? echo('Відновлення паролю'); ?></h3>
     <div class="form">
         <? $form = ActiveForm::begin(['id'=>'comments-form', 'enableAjaxValidation'=>false]);?>
-        <div class="row">
-            <?php echo $form->field($model, 'email')->label('E-mail:'); ?>
-        </div>
+        
+        <?php echo $form->field($model, 'email')->label('E-mail:'); ?>
 
         <div id="successMessage" class="row"></div>
 
-        <div class = "row buttons">
+        <div class = "buttons">
             <?= Html::submitButton('Відновити', ['id'=>"registrationButton", 'class' => 'btn btn-danger']);?>
         </div>
         <?php ActiveForm::end(); ?>

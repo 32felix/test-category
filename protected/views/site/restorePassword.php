@@ -28,7 +28,9 @@ use yii\helpers\Html;
         <div id="successMessage" class="row">
         </div>
         <div class="row buttons">
-            <?=Html::submitButton('Змінити', ['id'=>"changePasswordButton",'class'=>'btn btn-primary col-lg-offset-3'])?>
+            <div class="col-lg-offset-3">
+                <?=Html::submitButton('Змінити', ['id'=>"changePasswordButton",'class'=>'btn btn-primary col-lg-offset-3'])?>
+            </div>
         </div>
         <?php ActiveForm::end(); ?>
     </div>

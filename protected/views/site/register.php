@@ -49,10 +49,8 @@ $image = ImageUtils::captchaBuild()
         <?= $form->field($model, 'verifyCode') ?>
 
     <div class="form-group">
-            <div class="col-lg-12">
-                <?= Html::submitButton('Login', ['class' => 'btn btn-primary', 'name' => 'login-button']) ?>
-            </div>
-        </div>
+        <?= Html::submitButton('Зареєструватися', ['class' => 'btn btn-primary', 'name' => 'login-button']) ?>
+    </div>
 
     <?php ActiveForm::end(); ?>
 </div>

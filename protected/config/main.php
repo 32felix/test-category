@@ -111,6 +111,7 @@ $config = [
                 '/media/res/<id:[0-9/]+>/<slug>.<time>.<ext>'=>'image/image',
             ],
         ],
+        'eauth' => include(__DIR__ . "/include/eauth.php"),
     ],
     'modules' => [
         'ubi' => [
