@@ -43,12 +43,12 @@ return [
                     'class' => 'nodge\eauth\services\YahooOpenIDService',
                     //'realm' => '*.example.org', // your domain, can be with wildcard to authenticate on subdomains.
                 ),
-                'github' => array(
+                /*'github' => array(
                     // register your app here: https://github.com/settings/applications
                     'class' => 'nodge\eauth\services\GitHubOAuth2Service',
                     'clientId' => '...',
                     'clientSecret' => '...',
-                ),
+                ),*/
                 'live' => array(
                     // register your app here: https://account.live.com/developers/applications/index
                     'class' => 'nodge\eauth\services\LiveOAuth2Service',
