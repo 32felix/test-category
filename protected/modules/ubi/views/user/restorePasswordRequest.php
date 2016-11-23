@@ -3,11 +3,22 @@
 /***
  * @var $this CController
  */
+use kartik\form\ActiveForm;
+use yii\helpers\Html;
+
 ?>
 <div class="ubi-titled-content">
-    <div class="title"><? echo('Restore your password'); ?></div>
+    <h3 class="title"><? echo('Відновлення паролю'); ?></h3>
     <div class="form">
-        <?// $this->widget("mod.titUbiAuth.widgets.RestorePasswordRequestFormWidget", array("model"=>$model));?>
-        <? echo \tit\ubi\widgets\RestorePasswordRequestFormWidget::widget(["model"=>$model])?>
+        <? $form = ActiveForm::begin(['id'=>'comments-form', 'enableAjaxValidation'=>false]);?>
+        
+        <?php echo $form->field($model, 'email')->label('E-mail:'); ?>
+
+        <div id="successMessage" class="row"></div>
+
+        <div class = "buttons">
+            <?= Html::submitButton('Відновити', ['id'=>"registrationButton", 'class' => 'btn btn-danger']);?>
+        </div>
+        <?php ActiveForm::end(); ?>
     </div>
 </div>

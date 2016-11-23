@@ -1,5 +1,5 @@
 <?php
-namespace tit\ubi\utils;
+namespace app\modules\ubi\utils;
 
 
 	class FileAPI {

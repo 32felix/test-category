@@ -4,7 +4,7 @@
  */
 ?>
 <div class="ubi-titled-content">
-    <div class="title"><?="Change password"?></div>
+    <h3 class="title"><?="Зміна паролю"?></h3>
     <div class="form">
         <?=$this->render("changePasswordForm", array(
             "model"=>$model,

@@ -6,9 +6,8 @@
  * Time: 15:24
  */
 
-namespace tit\ubi;
+namespace app\modules\ubi;
 
-use tit\utils\assets\FileApiAsset;
 use yii\web\AssetBundle;
 use yii\web\View;
 

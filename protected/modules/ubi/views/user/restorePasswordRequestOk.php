@@ -1,1 +1,1 @@
-<span class="ubi-message">Password restoration instructions have been sent to your mail.</span>
+<span class="ubi-message">Інструкції по відновленню паролю було надіслано на пошту.</span>

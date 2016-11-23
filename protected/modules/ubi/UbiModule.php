@@ -6,13 +6,11 @@
  * Time: 4:02 PM
  */
 
-namespace tit\ubi;
+namespace app\modules\ubi;
 
 
-use tit\ubi\model\UsersSocialAccounts;
+use app\model\UsersSocialAccounts;
 use UbiCache;
-use yii\base\Application;
-use yii\base\BootstrapInterface;
 use yii\base\Module;
 use app\models\Users;
 use nodge\eauth\ErrorException;
@@ -31,7 +29,7 @@ class UbiModule extends Module
      * @var UbiCache
      */
     public $cache = [
-        "class"=>'tit\ubi\UbiCache',
+        "class"=>'app\modules\ubi\UbiCache',
         'cacheTime' => 600,
         'blocksParams' => ['password','id'],
         'checkUbiDB' => true,
@@ -82,7 +80,7 @@ class UbiModule extends Module
 
     /**
      * @param \nodge\eauth\ServiceBase $service
-     * @return User
+     * @return Users
      * @throws ErrorException
      */
     public function findLocalUserByEAuth($service)

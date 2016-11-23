@@ -7,9 +7,8 @@ use yii\helpers\Html;
 ?>
 
 <div class="ubi-titled-content">
-    <div class="title">User activation</div>
-    <p>Activation link is expired.</p>
-    <p>If you cannot sign in, try to <?=Html::a("restore your password", array("/ubi/user/restore-password-request"))?>. </p>
+    <p>Посилання, за яким Ви перейшли, вже не дійсне.</p>
+    <p>Якщо Ви не ввійшли, <?=Html::a("відновіть свій пароль", array("/restore-password-request"))?>. </p>
     <div class="info">
         <?php echo date('d.m.Y, H:i', time()); ?>
     </div>

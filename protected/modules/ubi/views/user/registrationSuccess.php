@@ -4,5 +4,5 @@
  * @var yii\web\View $this
  */
 ?>
-<span class="ubi-message">На вашу почту <b><?=$email?></b> пришло письмо для активации.</span>
+<span class="ubi-message">На вашу почту <b><?=$email?></b> прийшов лист для активації.</span>
 

@@ -6,19 +6,18 @@
  * Time: 8:46 PM
  * To change this template use File | Settings | File Templates.
  */
-namespace tit\ubi\widgets;
+namespace app\modules\ubi\widgets;
 
 
-use tit\ubi\model\form\ChangePassForm;
-use tit\ubi\model\GlobalUsers;
-use yii\base\View;
+use app\model\form\ChangePassForm;
+use app\models\Users;
 use yii\base\Widget;
 use Yii;
 
 
 class ChangePassFormWidget extends Widget
 {
-    public $action= array("/ubi/user/changePass");
+    public $action= array("/site/changePass");
     public $successfulUrl=null;
     /**
      * @var ChangePassForm
@@ -28,17 +27,14 @@ class ChangePassFormWidget extends Widget
 
     public function run()
     {
-        if (empty($this->model))
+        $user = Users::findOne(['id' => Yii::$app->user->getId()]);
+        if(empty($user))
         {
-            $user = GlobalUsers::find()->where(['id' => Yii::$app->user->getId()])->one();
-            if(empty($user))
-            {
-                return "User have not been found";
-            }
-            $model = new ChangePassForm();
-            $model->scenario = $user->password==null?ChangePassForm::SCENARIO_SET:ChangePassForm::SCENARIO_CHANGE;
-            $model->userId = $user->id;
+            return "Користувача не знайдено";
         }
+        $model = new ChangePassForm();
+        $model->userId = $user->id;
+        
         return $this->render("changePassFormWidget", ['model'=>$model]);
     }
 }

@@ -6,7 +6,7 @@
  * @var integer $return
  */
 ?>
-<span class="ubi-message">User is activated. Redirecting to the home page ...</span>
+<span class="ubi-message">Користувач активований. Перенаправлення на головну сторінку...</span>
 <script>
     document.location="/";
 </script>

@@ -2,7 +2,7 @@
 /**
  * @var yii\web\View $this
  */
-use tit\ubi\widgets\ChangePassFormWidget;
+use app\modules\ubi\widgets\ChangePassFormWidget;
 
 ?>
 

@@ -3,14 +3,22 @@
 /* @var $this \yii\web\View */
 
 use app\components\utils\GlobalsUtils;
+use app\components\utils\ParamsUtils;
 use app\models\form\OrdersForm;
 use app\models\Orders;
+use app\models\Params;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\bootstrap\Nav;
 use yii\bootstrap\NavBar;
 use yii\helpers\Url;
 use app\assets\AppAsset;
+
+$start = ParamsUtils::selectParam('workStart', '00:00');
+$finish = ParamsUtils::selectParam('workFinish', '23:59');
+$phone = ParamsUtils::selectParam('phone', null);
+$phone2 = ParamsUtils::selectParam('phone2', null);
+$minOrder = ParamsUtils::selectParam('minOrder', 0);
 
 
 $ip = OrdersForm::getIp();
@@ -38,7 +46,7 @@ if (!empty($orders))
     $count = ArrayHelper::getColumn($orders, 'sum');
     $count = array_sum($count);
 }
-$count = $count ?? 0;
+$count = !empty($count)?$count:0;
 
 AppAsset::register($this);
 
@@ -65,18 +73,22 @@ $this->title = 'PizzaTime';
             <div class="raw-mobile">
             <div class="col-md-4 col-xs-6 col-header">
                 <div id="phone">
-                    <img src="/images/header/phone.png">
-                    0 800 23 45 68
-                    <div class="point"></div>
-                    096 45 12 346
+                    <?if ($phone || $phone2):?>
+                        <img src="/images/header/phone.png">
+                    <?endif;?>
+                    <?= $phone?$phone:'' ?>
+                    <?if ($phone && $phone2):?>
+                        <div class="point"></div>
+                    <?endif;?>
+                    <?= $phone2?$phone2:'' ?>
                 </div>
-                <div id="call-back">Мінімальне замовлення <span class="number-color">50</span> грн</div>
+                <div id="call-back">Мінімальне замовлення <span class="number-color"><?= $minOrder ?></span> грн</div>
             </div>
             <div class="col-md-3 col-xs-6 col-header">
                 <div>
                     <?= Yii::$app->user->isGuest ? (
                         Html::beginForm(['#'], 'post', ['class' => 'navbar-form'])
-                        . Html::a('Реєстрація', [Url::toRoute('/site/register')],
+                        . Html::a('Реєстрація', [Url::toRoute('/register')],
                             [
                                 'class' => 'btn btn-link',
                                 'style' => 'border-right: 1px solid #F6511D',
@@ -87,7 +99,7 @@ $this->title = 'PizzaTime';
                         )
                         . Html::endForm()
                     ) : (
-                        Html::beginForm(['/site/logout'], 'post', ['class' => 'navbar-form'])
+                        Html::beginForm(['/logout'], 'post', ['class' => 'navbar-form'])
                         . Html::submitButton('Вихід (' . Yii::$app->user->identity->name . ')',
                             (Yii::$app->user->can('admin')?
                                 ['class' => 'btn btn-link', 'style' => 'border-right: 1px solid #F6511D']
@@ -104,7 +116,7 @@ $this->title = 'PizzaTime';
                 </div>
 
 
-                <div id="orders">Приймаємо замовлення з <span class="number-color">10:00</span> до <span class="number-color">22:00</span></div>
+                <div id="orders">Приймаємо замовлення з <span class="number-color"><?= $start ?></span> до <span class="number-color"><?= $finish ?></span></div>
             </div>
             </div>
             <div class="col-md-2 col-header">

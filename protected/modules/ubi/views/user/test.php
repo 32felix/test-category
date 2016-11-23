@@ -1,1 +1,0 @@
-<?=\tit\ubi\widgets\AvatarWidget::widget()?>

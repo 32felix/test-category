@@ -1,7 +1,7 @@
 <?php
-namespace tit\ubi\model;
+namespace app\model;
 
-use tit\ubi\UbiModule;
+use app\modules\ubi\UbiModule;
 use Yii;
 use yii\db\ActiveRecord;
     /**
@@ -26,7 +26,7 @@ use yii\db\ActiveRecord;
 
         public static  function getDb()
         {
-            return Yii::$app->{UbiModule::getInstance()->ubiDatabaseName};
+            return Yii::$app->db;
         }
 
         /**

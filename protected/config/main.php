@@ -84,11 +84,11 @@ $config = [
 
                 '/' => '/site/index',
                 '/contact' => '/site/contact',
-                '/register' => '/site/register',
-                '/change-pass' => '/site/change-pass',
-                '/activate' => '/site/activate',
-                '/restore-password-request' => '/site/restore-password-request',
-                '/email-restore' => '/site/email-restore',
+                '/register' => '/ubi/user/register',
+                '/change-pass' => '/ubi/user/change-pass',
+                '/activate' => '/ubi/user/activate',
+                '/restore-password-request' => '/ubi/user/restore-password-request',
+                '/email-restore' => '/ubi/user/email-restore',
                 '/login' => '/site/login',
                 '/delivery' => '/site/delivery',
 
@@ -115,7 +115,7 @@ $config = [
     ],
     'modules' => [
         'ubi' => [
-            'class' => tit\ubi\UbiModule::class,
+            'class' => app\modules\ubi\UbiModule::class,
             'params' => [
                 'allowedAvatarSizes' => [
                     "210x280", "150x200", "66x66", "37x37", "100x100", "200x200"

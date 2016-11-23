@@ -20,7 +20,7 @@ composer update
  'modules' =>
  [
         'ubi' => [
-            'class' => 'tit\ubi\UbiModule',
+            'class' => 'app\modules\ubi\UbiModule',
             // ... other configurations for the module ...
         ],
     ],

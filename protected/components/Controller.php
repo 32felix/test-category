@@ -30,7 +30,7 @@ class Controller extends \yii\web\Controller
             $this->getView()->assetBundles['yii\web\YiiAsset']=new AssetBundle();
             $this->getView()->assetBundles['yii\jui\CoreAsset']=new AssetBundle();
             $this->getView()->assetBundles['yii\bootstrap\BootstrapAsset']=new AssetBundle();
-            $this->getView()->assetBundles['tit\ubi\UbiAsset']=new AssetBundle();
+            $this->getView()->assetBundles['app\modules\ubi\UbiAsset']=new AssetBundle();
             $this->getView()->assetBundles['yii\jui\JuiAsset']=new AssetBundle();
             $this->getView()->assetBundles['app\modules\blog\BlogAssets']=new AssetBundle();
 //            $this->getView()->assetBundles[AjaxSubmitAsset::class]=new AssetBundle();

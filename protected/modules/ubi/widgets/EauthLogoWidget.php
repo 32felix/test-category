@@ -6,7 +6,7 @@
  * Time: 8:46 PM
  * To change this template use File | Settings | File Templates.
  */
-namespace app\widgets;
+namespace app\modules\ubi\widgets;
 
 
 use app\model\form\ChangePassForm;
@@ -16,7 +16,7 @@ use yii\base\Widget;
 use Yii;
 
 
-class ChangePassFormWidget extends Widget
+class EauthLogoWidget extends Widget
 {
     public $action= array("/site/changePass");
     public $successfulUrl=null;
@@ -28,14 +28,7 @@ class ChangePassFormWidget extends Widget
 
     public function run()
     {
-        $user = Users::findOne(['id' => Yii::$app->user->getId()]);
-        if(empty($user))
-        {
-            return "Користувача не знайдено";
-        }
-        $model = new ChangePassForm();
-        $model->userId = $user->id;
         
-        return $this->render("changePassFormWidget", ['model'=>$model]);
+        return $this->render("eauthLogo");
     }
 }

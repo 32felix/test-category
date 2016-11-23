@@ -1,6 +1,6 @@
 <?php
 
-namespace tit\ubi\model;
+namespace app\model;
 
 use yii\db\ActiveRecord;
 use Yii;
