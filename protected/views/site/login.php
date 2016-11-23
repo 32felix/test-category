@@ -43,7 +43,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <div class="body-social-content">
         <span>Ви можете використати соціальну мережу для входу на сайт:</span>
-        <?= Widget::widget(array('id'=>'login-eauth','action' => '/site/login-by-eauth'/*, 'predefinedServices' => ['vkontakte', 'ok', 'mailru', 'facebook']*/)); ?>
+        <?= Widget::widget(array('id'=>'login-eauth','action' => '/site/login-by-eauth', 'predefinedServices' => ['vkontakte', 'ok', 'mailru', 'facebook'])); ?>
     </div>
 
 </div>
