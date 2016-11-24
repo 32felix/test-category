@@ -3,6 +3,7 @@
 
 use app\components\services\UbiFacebookOAuth2Service;
 use app\components\services\UbiGoogleOAuth2Service;
+use app\components\services\UbiLinkedinOAuth2Service;
 use app\components\services\UbiMailruOAuth2Service;
 use app\components\services\UbiOdnoklassnikiOAuth2Service;
 use app\components\services\UbiTwitterOAuthService;
@@ -60,7 +61,7 @@ return [
                     //'realm' => '*.example.org', // your domain, can be with wildcard to authenticate on subdomains.
                 ),
                 'linkedin' => array(
-                    'class' => 'nodge\eauth\services\LinkedinOAuth2Service',
+                    'class' => UbiLinkedinOAuth2Service::class,
                     //'realm' => '*.example.org', // your domain, can be with wildcard to authenticate on subdomains.
                 ),
                 'instagram' => array(
