@@ -66,7 +66,7 @@ class OrdersController extends Controller
             ],
         ]);
 
-        $model1 = Orders::find()->where(['deleted' => 1]);
+        $model1 = Orders::find()->where(['deleted' => 1])->andWhere('status IS NOT NULL');
 
         $count1 = $model1->count();
 
@@ -117,6 +117,31 @@ class OrdersController extends Controller
         $this->layout = 'main';
         $form = new OrdersForm();
         $user = Yii::$app->user->identity;
+
+        $ip = OrdersForm::getIp();
+        $userAgent = GlobalsUtils::issetdef($_SERVER["HTTP_USER_AGENT"]);
+        $model = Orders::find();
+
+        if ($user)
+            $model->andWhere(['userId' => $user->Id]);
+        else
+            $model->andWhere('ip="'.$ip.'" AND userAgent="'.$userAgent.'" AND status IS NULL');
+
+        $model = $model->one();
+        $orders = [];
+
+        if ($model)
+        {
+            $sql = "SELECT SUM(IFNULL(PP.price*OP.count,0)) as `sum`, P.name, P.type, OP.count, OP.id, PP.price, PS.size
+            FROM OrderProducts OP
+            LEFT JOIN ProductsPrices PP ON PP.id=OP.productPriceId
+            LEFT JOIN ProductsSize PS ON PS.id=PP.sizeId
+            LEFT JOIN Products P ON P.id=PP.productId
+            WHERE OP.orderId=".$model->id."
+            GROUP BY OP.id";
+            $orders = Yii::$app->db->createCommand($sql)->queryAll();
+        }
+
         if ($form->load(Yii::$app->request->post()) && $form->create())
                 return $this->redirect('/admin/orders');
 
@@ -124,6 +149,7 @@ class OrdersController extends Controller
             'model' => $form,
             'user' => $user,
             'main' => 'Зберегти',
+            'orders' => $orders,
         ]);
     }
 
@@ -341,6 +367,7 @@ class OrdersController extends Controller
                 $res['count'] = $order->count;
 
                 $res['sum'] = OrderUtils::getSum($order->orderId);
+                $res['sumItem'] = OrderUtils::getSumItem($order->id);
 
                 $res["status"] = "ok";
             }

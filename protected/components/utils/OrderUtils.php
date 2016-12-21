@@ -26,4 +26,17 @@ class OrderUtils
         return sprintf('%.2f', $count);
     }
 
+    public static function getSumItem($id)
+    {
+        $sql = "SELECT SUM(OP.count*PP.price)
+                FROM OrderProducts OP
+                LEFT JOIN ProductsPrices PP ON PP.id=OP.productPriceId
+                WHERE OP.id=:id";
+
+        $count = Yii::$app->db->createCommand($sql)->bindValues(['id' => $id])->queryScalar();
+        $count = $count?$count:0;
+
+        return sprintf('%.2f', $count);
+    }
+
 }

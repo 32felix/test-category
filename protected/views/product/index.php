@@ -49,8 +49,8 @@ elseif ($type == "popcorn")
     $this->title = 'Попкорн';
     $s_title = 'попкорну';
     $title = 'попкорн';
-    $w = 170;
-    $h = 170;
+    $w = 150;
+    $h = 200;
 }
 
 ?>

@@ -6,6 +6,7 @@ use app\components\utils\ImageUtils;
 use app\model\form\ChangePassForm;
 use app\models\form\RegisterForm;
 use app\models\form\RemindPasswordForm;
+use app\models\Params;
 use app\models\Users;
 use Yii;
 use yii\filters\AccessControl;
@@ -66,7 +67,14 @@ class SiteController extends Controller
      */
     public function actionIndex()
     {
-        return $this->render('index');
+        $text = null;
+        $text = Params::findOne(['key' => 'mainPage', 'deleted' => 0]);
+
+        if ($text) {
+            $text = $text->value;
+        }
+
+        return $this->render('index', ['text' => $text,]);
     }
 
     /**
@@ -108,6 +116,13 @@ class SiteController extends Controller
      */
     public function actionContact()
     {
+        $text = null;
+        $text = Params::findOne(['key' => 'contact', 'deleted' => 0]);
+
+        if ($text) {
+            $text = $text->value;
+        }
+
         $model = new ContactForm();
         if ($model->load(Yii::$app->request->post()) && $model->contact(Yii::$app->params['adminEmail'])) {
             Yii::$app->session->setFlash('contactFormSubmitted');
@@ -116,6 +131,21 @@ class SiteController extends Controller
         }
         return $this->render('contact', [
             'model' => $model,
+            'text' => $text,
+        ]);
+    }
+
+    public function actionDelivery()
+    {
+        $text = null;
+        $text = Params::findOne(['key' => 'delivery', 'deleted' => 0]);
+
+        if ($text) {
+            $text = $text->value;
+        }
+
+        return $this->render('delivery', [
+            'text' => $text,
         ]);
     }
 }

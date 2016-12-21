@@ -23,10 +23,13 @@ $minOrder = ParamsUtils::selectParam('minOrder', 0);
 
 $ip = OrdersForm::getIp();
 $userAgent = GlobalsUtils::issetdef($_SERVER["HTTP_USER_AGENT"]);
-$model = Orders::find()->where('ip="'.$ip.'" AND userAgent="'.$userAgent.'" AND status IS NULL');
+$model = Orders::find();
 
 if ($userId = Yii::$app->user->getId())
     $model->andWhere(['userId' => $userId]);
+else
+    $model->andWhere('ip="'.$ip.'" AND userAgent="'.$userAgent.'" AND status IS NULL');
+
 $model = $model->one();
 $orders = [];
 if ($model)
@@ -180,7 +183,7 @@ $this->title = 'PizzaTime';
     $items[] = ['label' => 'Салати', 'url' => ['/product/index', 'type' => 'salad']];
     $items[] = ['label' => 'Напої', 'url' => ['/product/index', 'type' => 'drink']];
     $items[] = ['label' => 'Попкорн', 'url' => ['/product/index', 'type' => 'popcorn']];
-    $items[] = ['label' => 'Доставка', 'url' => ['/site/contact']];
+    $items[] = ['label' => 'Доставка', 'url' => ['/site/delivery']];
     $items[] = ['label' => 'Акції', 'url' => ['/services/index', 'type' => 'share']];
     $items[] = ['label' => 'Контакти', 'url' => ['/site/contact']]; ?>
 
