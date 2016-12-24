@@ -5,6 +5,7 @@
  */
 //$this->title = 'My Yii Application';
 
+use app\model\Avatars;
 use app\models\form\ReviewsForm;
 use yii\web\View;
 
@@ -18,7 +19,8 @@ $this->title = 'Відгуки';
     <? foreach ($model as $form):
         /**@var ReviewsForm $form*/?>
         <div class="img">
-            <img src="index.php">
+            <? $img = Avatars::findOne($form->imageId) ?>
+            <img src="<?= $img?$img->image:''?>">
         </div>
 
         <div class="review">

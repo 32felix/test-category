@@ -6,7 +6,9 @@
  */
 //$this->title = 'My Yii Application';
 
+use app\components\utils\ImageUtils;
 use app\models\form\ServicesForm;
+use app\models\Images;
 use yii\web\View;
 
 if ($type == "share")
@@ -14,18 +16,24 @@ if ($type == "share")
     $this->title = 'Акції';
     $s_title = 'акції';
     $title = 'акцію';
+    $w = 600;
+    $h = 200;
 }
 elseif ($type == "partner")
 {
     $this->title = 'Партнери';
     $s_title = 'партнера';
     $title = 'партнера';
+    $w = 250;
+    $h = 250;
 }
 elseif ($type == "new")
 {
     $this->title = 'Новини';
     $s_title = 'новини';
     $title = 'новину';
+    $w = 170;
+    $h = 170;
 }
 ?>
 
@@ -41,7 +49,8 @@ elseif ($type == "new")
             </div>
 
             <div class="img">
-                <img src="index.php">
+                <? $img = Images::findOne($form->imageId) ?>
+                <img src="<?= $img?ImageUtils::genImageUrl($img->id, $img->timeUpdate, $w, $h):''?>">
             </div>
 
             <div class="desc">

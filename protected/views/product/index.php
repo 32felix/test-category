@@ -156,7 +156,7 @@ elseif ($type == "popcorn")
 
             <div class="img">
                 <? $img = Images::findOne($form->imageId) ?>
-                <img src="<?= $img?ImageUtils::genImageUrl($img->id, $img->timeUpdate, 170, 170):''?>">
+                <img src="<?= $img?ImageUtils::genImageUrl($img->id, $img->timeUpdate, $w, $h):''?>">
             </div>
 
             <div class="desc">

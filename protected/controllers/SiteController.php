@@ -70,11 +70,23 @@ class SiteController extends Controller
         $text = null;
         $text = Params::findOne(['key' => 'mainPage', 'deleted' => 0]);
 
+        $shares = "SELECT I.*
+                   FROM Services S
+                   LEFT JOIN Imeges I ON I.id=S.imageId
+                   WHERE S.deleted=0 AND S.type='share' AND I.id IS NOT NULL
+                   ORDER BY timeUpdate DESC
+                   LIMIT 5";
+
+        $shares = Yii::$app->db->createCommand($shares)->queryAll();
+
         if ($text) {
             $text = $text->value;
         }
 
-        return $this->render('index', ['text' => $text,]);
+        return $this->render('index', [
+            'text' => $text,
+            'shares' => $shares,
+        ]);
     }
 
     /**
