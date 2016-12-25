@@ -171,6 +171,19 @@ class StateRegexAuthManager extends Component implements ManagerInterface
     }
 
     /**
+     * Returns child roles of the role specified. Depth isn't limited.
+     * @param string $roleName name of the role to file child roles for
+     * @return Role[] Child roles. The array is indexed by the role names.
+     * First element is an instance of the parent Role itself.
+     * @throws \yii\base\InvalidParamException if Role was not found that are getting by $roleName
+     * @since 2.0.10
+     */
+    public function getChildRoles($roleName)
+    {
+        // TODO: Implement getChildRoles() method.
+    }
+
+    /**
      * Returns the named permission.
      * @param string $name the permission name.
      * @return Permission the permission corresponding to the specified name. Null is returned if no such permission.

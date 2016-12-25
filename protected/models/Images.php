@@ -10,8 +10,8 @@ use yii\db\ActiveRecord;
  *
  * @property integer $id
  * @property string $timeUpdate
- * @property integer $productId
- * @property string $productType
+ * @property integer $ownerId
+ * @property string $ownerType
  * @property string $ext
  */
 class Images extends ActiveRecord
@@ -30,8 +30,8 @@ class Images extends ActiveRecord
     public function rules()
     {
         return [
-            [['productType', 'ext'], 'string'],
-            [['productId'], 'integer'],
+            [['ownerType', 'ext'], 'string'],
+            [['ownerId'], 'integer'],
             [['timeUpdate'], 'safe'],
         ];
     }
@@ -46,8 +46,8 @@ class Images extends ActiveRecord
     {
         return [
             'id' => 'ID',
-            'productId' => 'Назва продукту',
-            'productType' => 'Тип продукту',
+            'ownerId' => 'Назва продукту',
+            'ownerType' => 'Тип продукту',
             'ext' => 'Розширення файлу',
             'timeUpdate' => 'Час редагування',
         ];

@@ -94,10 +94,10 @@ class ProductsForm extends Model
                 $i++;
             }
             $images = Images::findOne($this->imageId);
-            if ($images->productId != $this->id)
+            if ($images->ownerId != $this->id)
             {
-                $images->productId = $this->id;
-                $images->productType = $this->type;
+                $images->ownerId = $this->id;
+                $images->ownerType = $this->type;
                 $images->save();
             }
 
@@ -156,10 +156,10 @@ class ProductsForm extends Model
             }
 
             $images = Images::findOne($this->imageId);
-            if ($images->productId != $this->id)
+            if ($images->ownerId != $this->id)
             {
-                $images->productId = $this->id;
-                $images->productType = $this->type;
+                $images->ownerId = $this->id;
+                $images->ownerType = $this->type;
                 $images->save();
             }
 

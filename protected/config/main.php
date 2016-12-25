@@ -13,6 +13,9 @@ $config = [
         require(__DIR__ . '/../vendor/yiisoft/extensions.php'),
         []
     ),
+    'aliases' => [
+        '@bower' => '@vendor/bower-asset',
+    ],
     'components' => [
         'assetManager' =>[
             'forceCopy'=>YII_DEBUG,

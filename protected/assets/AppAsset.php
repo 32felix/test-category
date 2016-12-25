@@ -30,6 +30,8 @@ class AppAsset extends AssetBundle
         'yii\bootstrap\BootstrapAsset',
         JqueryAsset::class,
         JuiAsset::class,
+        IdealImageSliderAsset::class,
+        SlickCarouselAsset::class,
     ];
 
     public $jsOptions = [

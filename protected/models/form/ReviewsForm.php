@@ -61,10 +61,10 @@ class ReviewsForm extends Model
         if ($product->save())
         {
             $images = Images::findOne($this->imageId);
-            if ($images->productId != $this->id)
+            if ($images->ownerId != $this->id)
             {
-                $images->productId = $this->id;
-                $images->productType = 'review';
+                $images->ownerId = $this->id;
+                $images->ownerType = 'review';
                 $images->save();
             }
             return true;
@@ -89,10 +89,10 @@ class ReviewsForm extends Model
         if ($product->save())
         {
             $images = Images::findOne($this->imageId);
-            if ($images->productId != $this->id)
+            if ($images->ownerId != $this->id)
             {
-                $images->productId = $this->id;
-                $images->productType = 'review';
+                $images->ownerId = $this->id;
+                $images->ownerType = 'review';
                 $images->save();
             }
             return true;

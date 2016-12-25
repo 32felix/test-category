@@ -31,7 +31,20 @@ echo GridView::widget([
     ],
     'columns' => [
 
-        "userName:raw:Ім'я користувача",
+        [
+            'format' => 'raw',
+            'attribute' => 'userName',
+            'value' => function ($model)
+            {
+                $name = $model['userName'];
+
+                if ($model['bonus'])
+                    $name .= ' (виграш)';
+
+                return $name;
+            },
+            'label' => "Ім'я користувача"
+        ],
 
         'telephone:raw:Телефон',
         [

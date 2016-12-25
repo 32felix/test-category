@@ -291,9 +291,12 @@ class OrdersController extends Controller
 
             $ip = OrdersForm::getIp();
             $userAgent = GlobalsUtils::issetdef($_SERVER["HTTP_USER_AGENT"]);
-            $model = Orders::find()->where('ip="'.$ip.'" AND userAgent="'.$userAgent.'" AND status IS NULL');
+            $model = Orders::find();
             if ($userId = Yii::$app->user->getId())
                 $model->andWhere(['userId' => $userId]);
+            else
+                $model->andWhere('ip="'.$ip.'" AND userAgent="'.$userAgent.'" AND status IS NULL');
+
             $model = $model->one();
 
             if (!$model)

@@ -4,12 +4,15 @@ namespace app\controllers;
 
 use app\components\utils\ImageUtils;
 use app\model\form\ChangePassForm;
+use app\models\form\ProductsForm;
 use app\models\form\RegisterForm;
 use app\models\form\RemindPasswordForm;
 use app\models\Params;
+use app\models\Products;
 use app\models\Users;
 use Yii;
 use yii\filters\AccessControl;
+use yii\helpers\ArrayHelper;
 use yii\web\Controller;
 use yii\filters\VerbFilter;
 use app\models\form\LoginForm;
@@ -72,12 +75,44 @@ class SiteController extends Controller
 
         $shares = "SELECT I.*
                    FROM Services S
-                   LEFT JOIN Imeges I ON I.id=S.imageId
+                   LEFT JOIN Images I ON I.id=S.imageId
                    WHERE S.deleted=0 AND S.type='share' AND I.id IS NOT NULL
                    ORDER BY timeUpdate DESC
                    LIMIT 5";
 
         $shares = Yii::$app->db->createCommand($shares)->queryAll();
+
+        $pizza = [];
+        $i = 0;
+        $model = Products::findAll(['type' => 'pizza', 'deleted' => 0]);
+
+        foreach ($model as $item)
+        {
+            /**@var Products $item */
+            $pizza[$i] = new ProductsForm();
+
+            $pizza[$i]->id = $item->id;
+            $pizza[$i]->name = $item->name;
+            $pizza[$i]->ingredients = $item->ingredients;
+            $pizza[$i]->type = 'pizza';
+            $pizza[$i]->imageId = $item->imageId;
+
+            $sql = Yii::$app->db->createCommand("SELECT S.*, P.price
+                FROM ProductsPrices P
+                LEFT JOIN ProductsSize S ON S.id=P.sizeId
+                WHERE S.type LIKE 'pizza' AND P.productId=".$item->id."
+                ORDER BY S.size")->queryAll();
+
+            $pizza[$i]->size = ArrayHelper::getColumn($sql, 'size');
+            $pizza[$i]->price = ArrayHelper::getColumn($sql, 'price');
+            $pizza[$i]->countMen = ArrayHelper::getColumn($sql, 'countMen');
+            foreach ($pizza[$i]->size as $keys=>$items)
+            {
+                $pizza[$i]->size[$keys] = $items;
+            }
+
+            $i++;
+        }
 
         if ($text) {
             $text = $text->value;
@@ -86,6 +121,7 @@ class SiteController extends Controller
         return $this->render('index', [
             'text' => $text,
             'shares' => $shares,
+            'pizza' => $pizza,
         ]);
     }
 

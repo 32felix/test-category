@@ -49,9 +49,9 @@ class ImageController extends Controller
                 {
                     $model = new Images();
                     if ($idPost)
-                        $model->productId = $idPost;
+                        $model->ownerId = $idPost;
                     if ($ownerType)
-                        $model->productType = $ownerType;
+                        $model->ownerType = $ownerType;
                 }
                 if($file['type'] == 'image/jpeg')
                     $model->ext = 'jpg';

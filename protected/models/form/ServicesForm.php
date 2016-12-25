@@ -60,10 +60,10 @@ class ServicesForm extends Model
         if ($product->save())
         {
             $images = Images::findOne($this->imageId);
-            if ($images->productId != $this->id)
+            if ($images->ownerId != $this->id)
             {
-                $images->productId = $this->id;
-                $images->productType = $this->type;
+                $images->ownerId = $this->id;
+                $images->ownerType = $this->type;
                 $images->save();
             }
             return true;
@@ -89,10 +89,10 @@ class ServicesForm extends Model
         if ($product->save())
         {
             $images = Images::findOne($this->imageId);
-            if ($images->productId != $this->id)
+            if ($images->ownerId != $this->id)
             {
-                $images->productId = $this->id;
-                $images->productType = $this->type;
+                $images->ownerId = $this->id;
+                $images->ownerType = $this->type;
                 $images->save();
             }
             return true;
