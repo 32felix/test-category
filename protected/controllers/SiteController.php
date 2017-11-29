@@ -2,23 +2,17 @@
 
 namespace app\controllers;
 
-use app\components\utils\ImageUtils;
-use app\model\form\ChangePassForm;
-use app\models\form\ProductsForm;
-use app\models\form\RegisterForm;
-use app\models\form\RemindPasswordForm;
-use app\models\Params;
-use app\models\Products;
-use app\models\Users;
+use app\components\utils\CategoryUtils;
 use Yii;
-use yii\filters\AccessControl;
-use yii\helpers\ArrayHelper;
+use app\models\Category;
+use app\models\search\CategorySearch;
 use yii\web\Controller;
-use yii\filters\VerbFilter;
-use app\models\form\LoginForm;
-use app\models\form\ContactForm;
 use yii\web\NotFoundHttpException;
+use yii\filters\VerbFilter;
 
+/**
+ * SiteController implements the CRUD actions for Category model.
+ */
 class SiteController extends Controller
 {
     /**
@@ -27,173 +21,109 @@ class SiteController extends Controller
     public function behaviors()
     {
         return [
-            'access' => [
-                'class' => AccessControl::className(),
-                'only' => ['logout'],
-                'rules' => [
-                    [
-                        'actions' => ['logout'],
-                        'allow' => true,
-                        'roles' => ['@'],
-                    ],
-                ],
-            ],
             'verbs' => [
                 'class' => VerbFilter::className(),
                 'actions' => [
-                    'logout' => ['post'],
+                    'delete' => ['POST'],
                 ],
             ],
         ];
     }
 
     /**
-     * @inheritdoc
-     */
-    public function actions()
-    {
-        return [
-            'error' => [
-                'class' => 'yii\web\ErrorAction',
-            ],
-            'captcha' => [
-                'class' => 'yii\captcha\CaptchaAction',
-                'fixedVerifyCode' => YII_ENV_TEST ? 'testme' : null,
-            ],
-        ];
-    }
-
-    /**
-     * Displays homepage.
-     *
-     * @return string
+     * Lists all Category models.
+     * @return mixed
      */
     public function actionIndex()
     {
-        $text = null;
-        $text = Params::findOne(['key' => 'mainPage', 'deleted' => 0]);
-
-        $shares = "SELECT I.*
-                   FROM Services S
-                   LEFT JOIN Images I ON I.id=S.imageId
-                   WHERE S.deleted=0 AND S.type='share' AND I.id IS NOT NULL
-                   ORDER BY timeUpdate DESC
-                   LIMIT 5";
-
-        $shares = Yii::$app->db->createCommand($shares)->queryAll();
-
-        $pizza = [];
-        $i = 0;
-        $model = Products::findAll(['type' => 'pizza', 'deleted' => 0]);
-
-        foreach ($model as $item)
-        {
-            /**@var Products $item */
-            $pizza[$i] = new ProductsForm();
-
-            $pizza[$i]->id = $item->id;
-            $pizza[$i]->name = $item->name;
-            $pizza[$i]->ingredients = $item->ingredients;
-            $pizza[$i]->type = 'pizza';
-            $pizza[$i]->imageId = $item->imageId;
-
-            $sql = Yii::$app->db->createCommand("SELECT S.*, P.price
-                FROM ProductsPrices P
-                LEFT JOIN ProductsSize S ON S.id=P.sizeId
-                WHERE S.type LIKE 'pizza' AND P.productId=".$item->id."
-                ORDER BY S.size")->queryAll();
-
-            $pizza[$i]->size = ArrayHelper::getColumn($sql, 'size');
-            $pizza[$i]->price = ArrayHelper::getColumn($sql, 'price');
-            $pizza[$i]->countMen = ArrayHelper::getColumn($sql, 'countMen');
-            foreach ($pizza[$i]->size as $keys=>$items)
-            {
-                $pizza[$i]->size[$keys] = $items;
-            }
-
-            $i++;
-        }
-
-        if ($text) {
-            $text = $text->value;
-        }
+        $category = CategoryUtils::listItems();
 
         return $this->render('index', [
-            'text' => $text,
-            'shares' => $shares,
-            'pizza' => $pizza,
+            'category' => $category,
         ]);
     }
 
     /**
-     * Login action.
-     *
-     * @return string
+     * Displays a single Category model.
+     * @param integer $id
+     * @return mixed
      */
-    public function actionLogin()
+    public function actionView($id)
     {
-        if (!Yii::$app->user->isGuest) {
-            return $this->goHome();
-        }
-
-        $model = new LoginForm();
-        if ($model->load(Yii::$app->request->post()) && $model->login()) {
-            return $this->goBack();
-        }
-        return $this->render('login', [
-            'model' => $model,
+        return $this->render('view', [
+            'model' => $this->findModel($id),
         ]);
     }
 
     /**
-     * Logout action.
-     *
-     * @return string
+     * Creates a new Category model.
+     * If creation is successful, the browser will be redirected to the 'view' page.
+     * @return mixed
      */
-    public function actionLogout()
+    public function actionCreate($id=null)
     {
-        Yii::$app->user->logout();
+        $model = new Category();
+        $model->parentId = $id ? $id : 0;
 
-        return $this->goHome();
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            return $this->redirect(['index']);
+        } else {
+            return $this->render('create', [
+                'model' => $model,
+            ]);
+        }
     }
 
     /**
-     * Displays contact page.
-     *
-     * @return string
+     * Updates an existing Category model.
+     * If update is successful, the browser will be redirected to the 'view' page.
+     * @param integer $id
+     * @return mixed
      */
-    public function actionContact()
+    public function actionUpdate($id)
     {
-        $text = null;
-        $text = Params::findOne(['key' => 'contact', 'deleted' => 0]);
+        $model = $this->findModel($id);
 
-        if ($text) {
-            $text = $text->value;
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            return $this->redirect(['index']);
+        } else {
+            return $this->render('update', [
+                'model' => $model,
+            ]);
         }
-
-        $model = new ContactForm();
-        if ($model->load(Yii::$app->request->post()) && $model->contact(Yii::$app->params['adminEmail'])) {
-            Yii::$app->session->setFlash('contactFormSubmitted');
-
-            return $this->refresh();
-        }
-        return $this->render('contact', [
-            'model' => $model,
-            'text' => $text,
-        ]);
     }
 
-    public function actionDelivery()
+    /**
+     * Deletes an existing Category model.
+     * If deletion is successful, the browser will be redirected to the 'index' page.
+     * @param integer $id
+     * @return mixed
+     */
+    public function actionDelete($id)
     {
-        $text = null;
-        $text = Params::findOne(['key' => 'delivery', 'deleted' => 0]);
+        $model = $this->findModel($id);
 
-        if ($text) {
-            $text = $text->value;
+        $model->deleted = 1;
+
+        if ($model->save())
+            CategoryUtils::deleteChildren($model->id);
+
+        return $this->redirect(['index']);
+    }
+
+    /**
+     * Finds the Category model based on its primary key value.
+     * If the model is not found, a 404 HTTP exception will be thrown.
+     * @param integer $id
+     * @return Category the loaded model
+     * @throws NotFoundHttpException if the model cannot be found
+     */
+    protected function findModel($id)
+    {
+        if (($model = Category::findOne($id)) !== null) {
+            return $model;
+        } else {
+            throw new NotFoundHttpException('The requested page does not exist.');
         }
-
-        return $this->render('delivery', [
-            'text' => $text,
-        ]);
     }
 }

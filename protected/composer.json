@@ -10,17 +10,10 @@
     "php": ">=5.4.0",
     "yiisoft/yii2": "dev-master",
     "yiisoft/yii2-bootstrap": "*",
-    "yiisoft/yii2-imagine": "~2.0.0",
     "yiisoft/yii2-swiftmailer": "*",
     "omnilight/yii2-momentjs": "*",
     "nizsheanez/yii2-asset-converter": "*",
-    "kartik-v/yii2-widgets": "*",
-    "yiisoft/yii2-jui": "*",
-    "bower-asset/bootstrap-daterangepicker": "~2.0.0",
-    "bower-asset/slick-carousel": "*",
-    "bower-asset/ideal-image-slider": "*",
-    "nodge/yii2-eauth": "2.3.0",
-    "gregwar/captcha": "1.*"
+    "yiisoft/yii2-jui": "*"
   },
   "require-dev": {
     "yiisoft/yii2-codeception": "*",

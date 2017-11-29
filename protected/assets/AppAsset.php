@@ -20,8 +20,6 @@ class AppAsset extends AssetBundle
 {
     public $sourcePath = __DIR__;
     public $css = [
-        'css/main.less',
-        'css/fonts.less',
     ];
     public $js = [
     ];
@@ -30,8 +28,6 @@ class AppAsset extends AssetBundle
         'yii\bootstrap\BootstrapAsset',
         JqueryAsset::class,
         JuiAsset::class,
-        IdealImageSliderAsset::class,
-        SlickCarouselAsset::class,
     ];
 
     public $jsOptions = [
